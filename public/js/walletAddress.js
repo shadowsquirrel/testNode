@@ -1,189 +1,191 @@
-// $('#text').html('Henrikin gotunu sikiyim liniancisini sikiyim orospu pici')
-//
-//
+var update = {}
+var wallet = {}
+
+update.text = (newText, idNum) => {
+
+    var span = '#text-' + idNum
+
+    $(span).html(newText);
+
+}
+
+log = (text) => {
+
+    console.log('------------------');
+    console.log('');
+    console.log('');
+    console.log(text);
+    console.log('');
+    console.log('');
+    console.log('------------------');
+
+}
+
+var myAccount = [];
+
+
 // var onboarding = new MetaMaskOnboarding();
 // var accounts;
-
-
-// $('#request-address').click( async () => {
+//
+// $('#onboard').click( async () => {
+//
+//     update.text('Account promise is on...', 1)
 //
 //     await window.ethereum.request({
 //         method: 'eth_requestAccounts',
 //     })
 //     .then(function(accounts) {
-//         console.log('what is this accounts -> ' + accounts);
+//
+//         update.text('Promise is fulfilled!', 1)
+//
+//         update.text(accounts, 2)
+//
+//         myAccount.push(accounts);
+//
+//         console.log('');
+//         console.log('');
+//         console.log('Onboard button await request then promise fulfilled->');
+//         log(myAccount)
+//
+//
 //     })
 //
 // })
 //
 //
 //
-//
 // window.ethereum.on('accountsChanged', function(newAccounts) {
 //
+//     update.text('Accounts changed promise is fulfilled', 3);
 //     accounts = newAccounts;
-//     updateButton();
+//     update.text(accounts, 4)
+//     myAccount.push(accounts);
+//
+//
+//     console.log('');
+//     console.log('');
+//     console.log('Accounts changed')
+//     log(myAccount)
 //
 // });
 
 
+update.text('Text-1', 1);
+update.text('Text-2', 2);
+update.text('Text-3', 3);
+update.text('Text-4', 4);
+update.text('Text-5', 5);
 
-// METAMASK.
-////////////
 
-// import MetaMaskOnboarding from '@metamask/onboarding';
 
-// var onboarding = new MetaMaskOnboarding();
-// var onboardButton = document.getElementById('onboard');
-// var accounts;
-// var metamaskAddress;
-//
-// function updateButton() {
-//
-//     if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
-//
-//         // TO DO: receive 'Install MetaMask' string from node given lang
-//         onboardButton.innerText = 'Install MetaMask';
-//         // onboardButton.innerText = lang.installMM;
-//
-//         onboardButton.onclick = function() {
-//
-//             onboardButton.innerText = 'connecting';
-//             // TO DO: receive 'connecting' string from node given lang
-//             // onboardButton.innerText = lang.connecting;
-//             onboardButton.disabled = true;
-//
-//             // directs to metamask add on page
-//             // listens for the metamask to be available
-//             onboarding.startOnboarding();
-//
-//         };
-//
-//     }
-//     else if (accounts && accounts.length > 0) {
-//
-//     // if (accounts && accounts.length > 0) {
-//
-//         onboardButton.innerText = '✔ ...' + accounts[0].slice(-4);
-//         onboardButton.disabled = true;
-//         onboarding.stopOnboarding();
-//
-//         metamaskAddress = accounts[0]
-//
-//         // debug
-//         console.log('Received metamask address - 1');
-//         console.log(metamaskAddress);
-//         console.log('sending address to player.js');
-//         console.log('what is this accounts -> ' + accounts);
-//
-//
-//     }
-//     else {
-//
-//         onboardButton.innerText = 'Connect';
-//
-//         onboardButton.onclick = async () => {
-//             try {
-//
-//                 await window.ethereum.request({
-//                     method: 'eth_requestAccounts',
-//                 })
-//                 .then(function(accounts) {
-//
-//                     onboardButton.innerText = `✔ ...${accounts[0].slice(-4)}`;
-//                     onboardButton.disabled = true;
-//
-//                     metamaskAddress = accounts[0]
-//
-//                     // debug
-//                     console.log('Received metamask address - 2');
-//                     console.log(metamaskAddress);
-//                     console.log('sending address to player.js');
-//                     console.log('what is this accounts -> ' + accounts);
-//
-//                 })
-//
-//             }
-//             catch(error) {
-//                 console.log('we have an error: ');
-//                 console.log(error);
-//                 // TO DO: update from node for the error string
-//                 window.alert('some error message to receive from node');
-//                 // window.alert(lang.error);
-//             };
-//         };
-//     }
-//
-//
-//
-//
-// };
-//
-// updateButton();
-//
-// if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-//
-//     window.ethereum.on('accountsChanged', function(newAccounts) {
-//
-//         accounts = newAccounts;
-//         updateButton();
-//
-//     });
-// }
+var web3 = new Web3(Web3.givenProvider)
+// var web3 = new Web3(window.ethereum);
 
 
 
 
 
+$('#button-1').click(async function() {
+
+    await window.ethereum
+    .request({
+        method: 'eth_requestAccounts',
+    })
+    .then((accounts) => {
+
+        update.text('account requested', 11)
+
+        update.text(accounts, 12)
+
+        myAccount.push(accounts);
+
+        console.log('');
+        console.log('');
+        console.log('CONNECT');
+        log(myAccount)
+
+    })
+
+})
+$('#button-2').click(async function() {
+
+    try {
+        await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x38' }],
+        });
+    } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+            try {
+                await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                        {
+                            chainId: '0x38',
+                            chainName: 'Smart Chain',
+                            rpcUrls: ['https://bsc-dataseed.binance.org/'] /* ... */,
+                        },
+                    ],
+                });
+            } catch (addError) {
+                // handle "add" error
+            }
+        }
+        // handle other "switch" errors
+    }
+
+})
 
 
-//////////////////////////
-//
-// window.addEventListener('DOMContentLoaded', () => {
-//
-//   const onboarding = new MetaMaskOnboarding();
-//   const onboardButton = document.getElementById('onboard');
-//   let accounts;
-//
-//   const updateButton = () => {
-//     if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
-//       onboardButton.innerText = 'Click here to install MetaMask!';
-//       // onboardButton.onclick = () => {
-//       //   onboardButton.innerText = 'Onboarding in progress';
-//       //   onboardButton.disabled = true;
-//       //   onboarding.startOnboarding();
-//       // };
-//       onboardButton.onclick = async () => {
-//         await window.ethereum.request({
-//           method: 'eth_requestAccounts',
-//         });
-//       };
-//     } else if (accounts && accounts.length > 0) {
-//       onboardButton.innerText = 'Connected';
-//       onboardButton.disabled = true;
-//       onboarding.stopOnboarding();
-//     } else {
-//       onboardButton.innerText = 'Connect';
-//       onboardButton.onclick = async () => {
-//         await window.ethereum.request({
-//           method: 'eth_requestAccounts',
-//         });
-//       };
-//     }
-//   };
-//
-//   updateButton();
-//
-//   if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-//     window.ethereum.on('accountsChanged', (newAccounts) => {
-//       accounts = newAccounts;
-//       updateButton();
-//     });
-//   }
-// });
+$('#button-3').click(async function() {
 
-// const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-// console.log(web3);
+    await window.ethereum
+    .request({
+        method: 'eth_accounts'
+    })
+    .then((accounts) => {
 
-// web3.setProvider('ws://localhost:8546');
-// web3.eth.getAccounts().then(console.log);
+        update.text('eth_accounts', 31)
+
+        update.text(accounts, 32)
+
+        myAccount.push(accounts);
+
+
+        console.log('');
+        console.log('');
+        console.log('eth_accounts');
+        log(myAccount)
+        console.log('');
+        console.log('');
+        console.log('eth.getAccounts');
+        web3.eth.getAccounts(console.log);
+
+    })
+
+})
+
+$('#button-4').click(async function() {
+
+    await window.ethereum
+    .request({
+        method: 'eth_chainId',
+    })
+    .then((myChainId) => {
+
+    update.text(myChainId, 41)
+
+    })
+
+})
+
+$('#button-5').click(async function() {
+
+
+
+})
+
+
+// web3.eth.accounts.wallet
+// console.log(web3.eth.accounts.wallet);

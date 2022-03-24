@@ -12,17 +12,8 @@
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
      stager
-        .stage('instructions')
+        .stage('wallet')
 
-        .stage('quiz')
-
-        .repeatStage('game', settings.ROUNDS)
-            .step('guess')
-            .step('results')
-
-        .stage('end')
-
-        .gameover();
 
     // Notice: here all stages but 'game' have
     // one step named after the stage.

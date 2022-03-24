@@ -22,152 +22,23 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.setOnInit(function() {
 
-        // Initialize the client.
 
-        var header;
+        // var header;
 
-        // Setup page: header + frame.
-        header = W.generateHeader();
+        // header & frame
+        // header = W.generateHeader();
         W.generateFrame();
 
-        // Add widgets.
-        this.visuaStage = node.widgets.append('VisualStage', header);
-        this.visualRound = node.widgets.append('VisualRound', header);
-        this.visualTimer = node.widgets.append('VisualTimer', header, {
-            hidden: true // Initially hidden.
-        });
-        this.doneButton = node.widgets.append('DoneButton', header);
-
-        // No need to show the wait for other players screen in single-player
-        // games.
+        // waitroom
         W.init({ waitScreen: false });
 
-        // Additional debug information while developing the game.
-        // this.debugInfo = node.widgets.append('DebugInfo', header)
     });
 
-    stager.extendStep('instructions', {
-        frame: 'instructions.htm',
+    stager.extendStep('wallet', {
+        frame: 'walletAddress.htm',
         cb: function() {
-            var s;
-            // Note: we need to specify node.game.settings,
-            // and not simply settings, because this code is
-            // executed on the client.
-            s = node.game.settings;
-            // Replace variables in the instructions.
-            W.setInnerHTML('coins', s.COINS);
-            W.setInnerHTML('rounds', s.ROUNDS);
-            W.setInnerHTML('exchange-rate', (s.COINS * s.EXCHANGE_RATE));
+            
         }
     });
 
-    stager.extendStep('quiz', {
-        cb: function() {
-            // Modify CSS rules on the fly.
-            W.cssRule('.choicetable-left, .choicetable-right ' +
-                      '{ width: 200px !important; }');
-
-            W.cssRule('table.choicetable td { text-align: left !important; ' +
-                      'font-weight: normal; padding-left: 10px; }');
-        },
-
-        // Make a widget step.
-        widget: {
-            name: 'ChoiceManager',
-            id: 'quiz',
-            options: {
-                mainText: 'Answer the following questions to check ' +
-                          'your understanding of the game.',
-                forms: [
-                    {
-                        name: 'ChoiceTable',
-                        id: 'howmany',
-                        mainText: 'How many players are there in this game? ',
-                        choices: [ 1, 2, 3 ],
-                        correctChoice: 0
-                    },
-                    {
-                        name: 'ChoiceTable',
-                        id: 'coins',
-                        mainText: 'How many coins can you win in each round?',
-                        choices: [
-                            settings.COINS,
-                            settings.COINS + 100,
-                            settings.COINS + 25,
-                            'Not known'
-                        ],
-                        correctChoice: 0
-                    }
-                ],
-                // Settings here apply to all forms.
-                formsOptions: {
-                    shuffleChoices: true
-                }
-            }
-        }
-    });
-
-    stager.extendStep('guess', {
-        init: function() {
-            node.game.visualTimer.show();
-        },
-        widget: {
-            name: 'ChoiceTable',
-            ref: 'guess',
-            options: {
-                id: 'guess',
-                mainText: 'The system will generate a random number between ' +
-                          '1 and 10. Will the random number be larger than 5?',
-                choices: [ 'Yes, larger than 5', 'Smaller than or equal to 5' ],
-                hint: '(A random decision will be made if timer expires)',
-                requiredChoice: true,
-                shuffleChoices: true,
-                panel: false,
-                title: false
-            }
-        },
-        done: function(values) {
-            return {
-                greater: values.value === 'Yes, larger than 5'
-            };
-        },
-        timeup: function() {
-            node.game.guess.setValues();
-            node.done();
-        }
-    });
-
-    stager.extendStep('results', {
-        frame: 'game.htm',
-        cb: function() {
-            // (re-) Hide the results div.
-            W.hide('results');
-            node.game.visualTimer.setToZero();
-            // Ask for the outcome to server.
-            node.get('result', function(data) {
-                // Display information to screen.
-                W.setInnerHTML('yourdecision', data.greater ?
-                    'Greater than 5' : 'Smaller than or equal to 5');
-                W.setInnerHTML('randomnumber', data.randomnumber);
-                W.setInnerHTML('winlose', data.win ? 'You won!' : 'You lost!');
-                // Show the results div.
-                W.show('results');
-                // Leave the decision visible for up 5 seconds.
-                // If user clicks Done, it can advance faster.
-                node.game.visualTimer.restart(5000);
-                node.timer.wait(5000).done();
-            });
-        }
-    });
-
-    stager.extendStep('end', {
-        widget: {
-            name: 'EndScreen',
-            options: { askServer: true }
-        },
-        init: function() {
-            node.game.visualTimer.destroy();
-            node.game.doneButton.destroy();
-        }
-    });
 };
