@@ -1,0 +1,21 @@
+.main-column
+{
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    height:90vh;
+}
+.main-row
+{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+}
+.main-main
+{
+    /* width:500px;
+    height:700px;
+    text-align:center;
+    font-size:40px; */
+}
