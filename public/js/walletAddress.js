@@ -79,15 +79,6 @@ update.text('Text-5', 5);
 
 
 var web3 = new Web3(Web3.givenProvider)
-// var web3 = new Web3(window.ethereum);
-
-// wallet.checkProviders = () => {
-//
-//     // check if providers object exists (does not exist for math wallet)
-//     if()
-//
-// }
-
 
 
 // METAMASK
@@ -103,16 +94,9 @@ $('#button-1').click(async function() {
         .request({ method: 'eth_requestAccounts' })
         .then((accounts) => {
 
-            update.text('account requested', 11)
-
-            update.text(accounts, 12)
-
+            update.text(accounts, 11);
             myAccount.push(accounts);
-
-            console.log('');
-            console.log('');
-            console.log('CONNECT');
-            log(myAccount)
+            log(myAccount);
 
         })
 
@@ -243,14 +227,9 @@ $('#button-5').click(async function() {
         .request({ method: 'eth_requestAccounts' })
         .then((accounts) => {
 
-            update.text(accounts, 51)
-
+            update.text(accounts, 51);
             myAccount.push(accounts);
-
-            console.log('');
-            console.log('');
-            console.log('CONNECT');
-            log(myAccount)
+            log(myAccount);
 
         })
     } else {
@@ -262,8 +241,8 @@ $('#button-5').click(async function() {
 // MATH WALLET
 $('#button-6').click(async function() {
 
-    // window.ethereum.isMathWallet
     if(window.ethereum && window.ethereum.isMathWallet) {
+
         await window.ethereum
         .request({
             method: 'eth_requestAccounts',
@@ -271,21 +250,14 @@ $('#button-6').click(async function() {
         .then((accounts) => {
 
             update.text(accounts, 61)
-
             myAccount.push(accounts);
-
-            console.log('');
-            console.log('');
-            console.log('CONNECT');
             log(myAccount)
 
         })
+
     } else {
         update.text('No math wallet', 61)
     }
-
-
-
 
 })
 
@@ -293,6 +265,7 @@ $('#button-6').click(async function() {
 $('#button-8').click(async function() {
 
     if(window.BinanceChain != undefined) {
+
         await window.BinanceChain
         .request({
             method: 'eth_requestAccounts',
@@ -300,12 +273,7 @@ $('#button-8').click(async function() {
         .then((accounts) => {
 
             update.text(accounts, 81)
-
             myAccount.push(accounts);
-
-            console.log('');
-            console.log('');
-            console.log('CONNECT');
             log(myAccount)
 
         })
@@ -327,12 +295,7 @@ $('#button-9').click(async function() {
         .then((accounts) => {
 
             update.text(accounts, 91)
-
             myAccount.push(accounts);
-
-            console.log('');
-            console.log('');
-            console.log('CONNECT');
             log(myAccount)
 
         })
@@ -343,7 +306,39 @@ $('#button-9').click(async function() {
 
 })
 
-// PHANTOM CHAIN CONNECT
+// GUARDA WALLET -> DOES NOT WORK
+$('#button-13').click(async function() {
+
+    web3js = new Web3(web3.currentProvider);
+
+    if(!web3.currentProvider.guardaWeb3) {
+        update.text('no guarda wallet', 131);
+    } else {
+        update.text(web3.currentProvider.address, 131);
+    }
+
+    // console.log(web3js);
+    //
+    // console.log(window.guarda);
+    //
+    // if(window.guarda != undefined) {
+    //
+    //     var defaultWallet2 = window.guarda.defaultWallet;
+    //
+    //     var allWallets2 = window.guarda.wallets;
+    //
+    //     console.log(window.guarda);
+    //     console.log(defaultWallet2);
+    //     console.log(allWallets2);
+    //
+    //     update.text(defaultWallet2, 131);
+    //     update.text(allWallets2, 132);
+    //
+    // }
+
+})
+
+// PHANTOM CHAIN CONNECT -> DOES NOT WORK
 $('#button-10').click(async function() {
 
     console.log('asdasdasdasdasd');
@@ -359,12 +354,30 @@ $('#button-10').click(async function() {
         // const resp = await window.solana.request({ method: "connect" });
         // resp.publicKey.toString()
 
-        await window.solana.request({ method: "connect" })
-        .then(({ publicKey }) => {
-            console.log(publicKey);
-            // console.log(publicKey.toString());
+        // await window.solana.request({ method: "connect" })
+        // .then(({ publicKey }) => {
+        //     console.log(publicKey);
+        //     // console.log(publicKey.toString());
+        //
+        // });
 
-        });
+        console.log(window.solana);
+
+        var connect_wallet = window.solana.connect();
+
+        console.log(connect_wallet);
+
+
+        window.solana.on('connect', () => {
+
+            // Check Connection
+            console.log("Phantom Connected: " + phantom.isConnected);
+
+            // Get Wallet Address
+            var wallet_address = phantom.publicKey.toString();
+            console.log("Solana Wallet Address: " + wallet_address);
+
+        })
 
 
     } else {
@@ -373,16 +386,9 @@ $('#button-10').click(async function() {
 
 })
 
-// ADDITIONAL SOLANA ACTION TO MAKE THINGS WORK BUT IN VAIN
-window.solana.on("connect", () => {
+console.log(solanaWeb3);
 
-    console.log("connected!");
-    console.log(window.solana.publicKey.toString());
-
-})
-// window.solana.publicKey.toString()
-
-// PHANTOM CHAIN DISCONNECT
+// PHANTOM CHAIN DISCONNECT -> DOES NOT WORK
 $('#button-11').click(async function() {
 
     console.log('asdasdasdasdasd');
@@ -419,6 +425,82 @@ $('#button-11').click(async function() {
     }
 
 })
+
+
+// ------- WALLET CONNECT STUFF -------- //
+
+var wc = {}
+
+wc.provider = new WalletConnectProvider.default({
+  rpc: {
+    1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+    56: "https://bsc-dataseed.binance.org/",
+    137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+    43114: "https://api.avax.network/ext/bc/C/rpc",
+    1666600000: "https://api.harmony.one",
+  },
+  bridge: 'https://bridge.walletconnect.org',
+});
+
+wc.connect = async () => {
+
+    console.log('inside wc.connect');
+
+    await wc.provider
+    .enable()
+    .then((something)=>{
+
+        update.text(something, 121)
+
+        // console.log('.then section inside wc.connect');
+        // console.log(something);
+        //
+        // wc.web3 = new Web3(wc.provider);
+        //
+        // window.wc = wc.web3;
+        //
+        // return wc.web3;
+
+    })
+    // .then((something)=>{
+    //     console.log('second then');
+    //     console.log(something);
+    //     // wc.accountList = await wc.web3.eth.getAccounts();
+    //     // wc.accountList = wc.web3.eth.getAccounts();
+    //     wc.accountList = something.eth.getAccounts();
+    // })
+    // .then(()=>{
+    //
+    //     wc.account = wc.accountList[0];
+    //
+    //     update.text(wc.account, 121)
+    //
+    //     return wc.account;
+    // })
+
+}
+
+$('#button-12').click(function() {
+
+    wc.connect();
+
+})
+
+// WALLET CONNECT  EVENT LISTENERS
+// Subscribe to accounts change
+// wc.provider.on("accountsChanged", (accounts: string[]) => {
+//   console.log(accounts);
+// });
+//
+// // Subscribe to chainId change
+// wc.provider.on("chainChanged", (chainId: number) => {
+//   console.log(chainId);
+// });
+//
+// // Subscribe to session disconnection
+// provider.on("disconnect", (code: number, reason: string) => {
+//   console.log(code, reason);
+// });
 
 // ACCOUNT CHANGE LISTENER
 var counter = 0;

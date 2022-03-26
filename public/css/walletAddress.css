@@ -6,12 +6,17 @@
 }
 .main-main
 {
-    flex-direction:row;
+    flex-direction:column;
 }
-
-.column-1,.column-2
+.row-div
 {
     display:flex;
+    flex-direction:row;
+}
+.column-1,.column-2
+{
+    display:none;
+    /* display:flex; */
     flex-direction: column;
     margin-right:10%;
     margin-left:10%;
