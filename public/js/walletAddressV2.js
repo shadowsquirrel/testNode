@@ -210,51 +210,68 @@ $('#button-9').click(async function() {
 
 var wc = {}
 
-wc.provider = new WalletConnectProvider.default({
-  rpc: {
-    1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
-    56: "https://bsc-dataseed.binance.org/",
-    137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
-    43114: "https://api.avax.network/ext/bc/C/rpc",
-    1666600000: "https://api.harmony.one",
-  },
-  bridge: 'https://bridge.walletconnect.org',
-});
+// wc.provider = new WalletConnectProvider.default({
+//   rpc: {
+//     1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+//     56: "https://bsc-dataseed.binance.org/",
+//     137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+//     43114: "https://api.avax.network/ext/bc/C/rpc",
+//     1666600000: "https://api.harmony.one",
+//   },
+//   bridge: 'https://bridge.walletconnect.org',
+// });
 
 // button to connect get address and disconnect
 $('#button-12').click(async function() {
 
+    wc.provider = new WalletConnectProvider.default({
+      rpc: {
+        1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+        56: "https://bsc-dataseed.binance.org/",
+        137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+        43114: "https://api.avax.network/ext/bc/C/rpc",
+        1666600000: "https://api.harmony.one",
+      },
+      bridge: 'https://bridge.walletconnect.org',
+    });
+
     console.log('inside wc.connect');
 
-    await wc.provider
-    .enable()
-    .then((address)=>{
+    try {
+        await wc.provider
+        .enable()
+        .then((address)=>{
 
-        update.text(address, 121);
+            update.text(address, 121);
 
-    })
-    .then(()=> {
+        })
+        .then(()=> {
+            wc.provider.disconnect();
+        })
+    } catch (switchError) {
+        console.log(switchError.code);
+        console.log(switchError);
         wc.provider.disconnect();
-    })
+    }
 
 })
 
 // button to disconnect
-$('#button-122').click(async function() {
-
-    console.log('disconnect button');
-
-    await wc.provider.disconnect();
-
-})
+// $('#button-122').click(async function() {
+//
+//     console.log('disconnect button');
+//
+//     await wc.provider.disconnect();
+//
+// })
 
 // disconnect listener
-wc.provider.on("disconnect", (code, reason) => {
-
-    console.log('asdasdasdasd12312asd436gf');
-    console.log(code, reason);
-
-});
+// wc.provider.on("disconnect", (code, reason) => {
+//
+//     console.log('asdasdasdasd12312asd436gf');
+//     console.log(code, reason);
+//
+// });
 
 
 // ACCOUNT CHANGE LISTENER
