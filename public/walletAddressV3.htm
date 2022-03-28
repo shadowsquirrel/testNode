@@ -27,7 +27,8 @@
         <!-- SOLANA - MAYBE A DIFFERENT LINK ? -->
         <!-- <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script> -->
         <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-
+        <!-- FOR SOLLET - FAILED TO USE IT -->
+        <!-- <script src='https://cdn.jsdelivr.net/npm/@project-serum/sol-wallet-adapter@0.2.6/dist/cjs/index.min.js'></script> -->
     </head>
 
 
@@ -62,6 +63,11 @@
                     </div>
 
                     <div class=column-2>
+                        <button id=button-kp style='cursor:pointer;' class=button-kp>CONNECT KEPLR</button>
+                        <span id=text-kp class='text button-kp'>-</span>
+                        <br />
+                        <button id=button-sf style='cursor:pointer;' class=button-sf>CONNECT SOLFLARE</button>
+                        <span id=text-sf class='text button-sf'>-</span>
                         <br />
                         <button id=button-8 style='cursor:pointer;' class=button-bc>CONNECT BINANCE</button>
                         <span id=text-81 class='text button-bc'>-</span>
@@ -77,7 +83,9 @@
                     </div>
 
                 </div>
-
+                <br />
+                <button id=button-test style='cursor:pointer;'>TEST</button>
+                <span id=text-test class='text button-test'>-</span>
                 <br />
                 <span>Watching for accounts changes</span>
                 <span id=text-01 class='text'>----</span>
@@ -98,6 +106,6 @@
     <!-- METAMASK.JS -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/@metamask/onboarding@1.0.1/dist/metamask-onboarding.bundle.js"></script> -->
 
-    <script src="js/walletAddressV2.js" charset="utf-8"></script>
+    <script src="js/walletAddressV3.js" charset="utf-8"></script>
 
 </body>

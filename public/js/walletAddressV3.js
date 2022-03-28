@@ -1,3 +1,4 @@
+
 var update = {}
 var wallet = {}
 
@@ -26,11 +27,33 @@ var myAccount = [];
 
 wallet.check = () => {
 
-    var isMM = window.ethereum && (window.ethereum.providers != undefined);
-    var isCB = window.ethereum && (window.ethereum.providers != undefined);
-    var isMW = (window.ethereum && window.ethereum.isMathWallet) || (window.solana && window.solana.isMathWallet);
+    // METAMASK CHECK
+    var isMM_1 = (window.ethereum.providers.find((provider) => provider.isMetaMask) != undefined);
+    var isMM_2 = window.ethereum && (window.ethereum.providers != undefined);
+    var isMM = isMM_1 && isMM_2;
+
+    // COINBASE CHECK
+    var isCB_1 = (window.ethereum.providers.find((provider) => provider.isCoinbaseWallet) != undefined);
+    var isCB_2 = window.ethereum && (window.ethereum.providers != undefined);
+    var isCB = isCB_1 && isCB_2;
+
+    // MATH WALLET CHECK -> NOTE FOR BITCOIN WE CAN HAVE A MATH WALLET BUT WE ARE NOT SURE YET
+    var isMW_1 = window.ethereum && window.ethereum.isMathWallet;
+    var isMW_2 = window.solana && window.solana.isMathWallet;
+    var isMW = isMW_1 || isMW_2;
+
+    // BINANCE WALLET CHECK
     var isBC = window.BinanceChain != undefined;
     var isC98 = window.ethereum && window.ethereum.isCoin98;
+
+    // SOLFLARE CHECK
+    var isSF = window.solflare && window.solflare.isSolflare;
+
+    // TRON CHECK -> FOR ANY WALLET
+
+    // SOLANA CHECK -> FOR ANY WALLET
+
+    // COSMOS CHECK -> FOR ANY WALLET
 
     if(!isMM) {
         wallet.hide('mm');
@@ -79,13 +102,6 @@ $('#main-connect').click(function() {
     $('#main-connect').css({'display':'none'});
     wallet.check();
 })
-
-// window.onload = function() {
-//     // storing ethereum before it is overridden
-//     const storage = window.ethereum;
-//     console.log(storage);
-// }
-
 
 // METAMASK
 $('#button-1').click(async function() {
@@ -138,9 +154,75 @@ $('#button-5').click(async function() {
 
 })
 
+// SOLFLARE
+$('#button-sf').click(async function() {
+
+    await window.solflare.connect()
+    .then((promise)=>{
+        console.log('solfare');
+        if(promise) {
+            update.text(window.solflare.publicKey.toString(), 'sf');
+        } else {
+            update.text('Permission denied', 'sf');
+        }
+
+
+
+    })
+})
+
+// KEPLR
+$('#button-kp').click(async function() {
+
+    var chainId = "cosmoshub-4";
+
+    await window.keplr.enable(chainId);
+
+    var offlineSigner = window.keplr.getOfflineSigner(chainId);
+
+    await offlineSigner
+    .getAccounts()
+    .then((accounts)=>{
+        console.log(accounts);
+        var addresses = accounts.map(i => i.address)
+        console.log(accounts[0].address);
+        console.log(addresses);
+        update.text(addresses, 'kp')
+    });
+
+})
+
+// FAILED SOLLET ACTION
+// let connection = new Connection(clusterApiUrl('devnet'));
+// let providerUrl = 'https://www.sollet.io';
+// wallet.sollet = new Wallet(providerUrl);
+// wallet.sollet.on('connect', publicKey => console.log('Connected to ' + publicKey.toBase58()));
+// wallet.sollet.on('disconnect', () => console.log('Disconnected'));
+// await wallet.sollet.connect();
+
+$('#button-test').click(async function() {
+
+    // try {
+    //     const resp = await window.solana.request({ method: "connect" });
+    //     resp.publicKey.toString()
+    //     // 26qv4GCcx98RihuK3c4T6ozB3J7L6VwCuFVc7Ta2A3Uo
+    // } catch (err) {
+    //     // { code: 4001, message: 'User rejected the request.' }
+    // }
+
+    // await window.solana
+    // .getAccount()
+    // .then((address)=>{
+    //
+    //      update.text(address, 'test');
+    //
+    // })
+
+    window.ethereum.selectedProvider.scanQRCode();
+
+})
 // MATH WALLET
 var mw = {}
-
 mw.check = ()=>{
     var isPolkadot = (window.injectedWeb3 && window.injectedWeb3.mathwallet);
     // window.injectedWeb3.enable()
@@ -149,30 +231,43 @@ mw.check = ()=>{
 $('#button-6').click(async function() {
 
 
-    // window.solana && window.solana.isMathWallet
-    // await window.solana
-    // .getAccount()
-    // .then((address)=>{
+    // await window.BinanceChain
+    // .request({
+    //     method: 'eth_requestAccounts',
+    // })
+    // .then((accounts) => {
     //
-    //      update.text(address, 61);
-    //      update.text('Solana', 62)
+    //     update.text(accounts, 81)
+    //     myAccount.push(accounts);
+    //     log(myAccount)
     //
     // })
+
+
+    // window.solana && window.solana.isMathWallet
+    await window.solana
+    .getAccount()
+    .then((address)=>{
+
+         update.text(address, 61);
+         update.text('Solana', 62)
+
+    })
     // if(window.ethereum && window.ethereum.isMathWallet) {
     //
-        await window.ethereum
-        .request({
-            method: 'eth_requestAccounts',
-        })
-        .then((accounts) => {
-
-            update.text(accounts, 61)
-            myAccount.push(accounts);
-            log(myAccount)
-            update.text(window.ethereum.chainId, 62);
-            update.text(window.ethereum.address, 63)
-
-        })
+        // await window.ethereum
+        // .request({
+        //     method: 'eth_requestAccounts',
+        // })
+        // .then((accounts) => {
+        //
+        //     update.text(accounts, 61)
+        //     myAccount.push(accounts);
+        //     log(myAccount)
+        //     update.text(window.ethereum.chainId, 62);
+        //     update.text(window.ethereum.address, 63)
+        //
+        // })
     //
     // } else {
     //     update.text('No math wallet', 61)
