@@ -218,7 +218,6 @@ $('#button-test').click(async function() {
     //
     // })
 
-    window.ethereum.selectedProvider.scanQRCode();
 
 })
 // MATH WALLET
