@@ -27,23 +27,33 @@ var myAccount = [];
 
 wallet.check = () => {
 
+    var isMM, isCB
+
     // METAMASK CHECK
-    var isMM_1 = (window.ethereum.providers.find((provider) => provider.isMetaMask) != undefined);
-    var isMM_2 = window.ethereum && (window.ethereum.providers != undefined);
-    var isMM = isMM_1 && isMM_2;
+    if(window.ethereum && (window.ethereum.providers != undefined)) {
+        isMM = (window.ethereum.providers.find((provider) => provider.isMetaMask) != undefined)
+    } else {
+        isMM = false;
+    }
+
 
     // COINBASE CHECK
-    var isCB_1 = (window.ethereum.providers.find((provider) => provider.isCoinbaseWallet) != undefined);
-    var isCB_2 = window.ethereum && (window.ethereum.providers != undefined);
-    var isCB = isCB_1 && isCB_2;
+    if(window.ethereum && (window.ethereum.providers != undefined)) {
+        isCB = (window.ethereum.providers.find((provider) => provider.isCoinbaseWallet) != undefined);
+    } else {
+        isCB = false;
+    }
+
 
     // MATH WALLET CHECK -> NOTE FOR BITCOIN WE CAN HAVE A MATH WALLET BUT WE ARE NOT SURE YET
     var isMW_1 = window.ethereum && window.ethereum.isMathWallet;
     var isMW_2 = window.solana && window.solana.isMathWallet;
     var isMW = isMW_1 || isMW_2;
 
-    // BINANCE WALLET CHECK
+    // BINANCE WALLET CHECK -> not sure if this is the only case
     var isBC = window.BinanceChain != undefined;
+
+
     var isC98 = window.ethereum && window.ethereum.isCoin98;
 
     // SOLFLARE CHECK
