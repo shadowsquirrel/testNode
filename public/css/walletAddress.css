@@ -1,6 +1,6 @@
 .text
 {
-    color:blue;
+    color:black;
     display:block;
     margin-bottom:10%;
 }
@@ -10,8 +10,13 @@
 }
 .row-div
 {
+    justify-content: center;
     display:flex;
     flex-direction:row;
+    height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 1050px;
 }
 .column-1,.column-2
 {
@@ -20,4 +25,21 @@
     flex-direction: column;
     margin-right:10%;
     margin-left:10%;
+}
+.chain-text
+{
+    display:block;
+    margin-top:-40px;
+    color:blue;
+}
+.text-mobile-separator
+{
+    text-align: center;
+    background: black;
+    color: white;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: 800;
+    border-radius: 100px;
 }

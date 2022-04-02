@@ -1,7 +1,30 @@
 
-var update = {}
-var wallet = {}
+var node = parent.node;
+var W = parent.W;
 
+var update = {}
+var wallet = {
+    address: {}
+}
+var chain = {}
+var check = {
+    dot: undefined,
+    eth: undefined,
+    ada: undefined,
+    sol: undefined
+}
+
+// chain.dot = injectedWeb3;
+// injectedWeb3.clover.enable()
+// .then((res)=>{
+//     var cloverWallet = res.accounts.get();
+//     console.log(cloverWallet);
+//     return cloverWallet
+// })
+// .then((res)=>{
+//     console.log(res[0].address)
+//     wallet.address.clover = res[0].address
+// })
 
 update.text = (newText, idNum) => {
 
@@ -25,45 +48,172 @@ log = (text) => {
 
 var myAccount = [];
 
+// ETHEREUM
+var isMM = false;
+var isCB = false;
+
+// MULTI CHAIN
+var isMW = {
+    any: false,
+    eth: false,
+    btc: false,
+    sol: false,
+    tron: false,
+    cosmos: false,
+    binance: false,
+    dot: false,
+    fantom: false,
+};
+var isC98 = {
+    any: false,
+    eth: false,
+    sol: false,
+    binance: false,
+    ronin: false,
+    kardia: false,
+    avax: false,
+    fantom: false,
+};
+var isClover = {
+    dot: false,
+    sol: false,
+    tron: false,
+    kadena: false,
+}
+
+// CARDANO
+var isYoroi = false;
+var isNami = false;
+
+// POLKADOT
+var isDotJS = false;
+
+// BINANCE
+var isBC = false;
+
+// SOLANA
+var isSF = false;
+
+//---//
+// to replace the window object in the html level with the window object
+// at the parent
+var win = undefined;
+
+node.on('client-window', (msg) => {
+    win = msg;
+})
+node.emit('html-window');
+//---//
+
+
+
 wallet.check = () => {
 
-    var isMM, isCB
+    // ETH WALLET DETECTION
+    if(window.ethereum) {
 
-    // METAMASK CHECK
-    if(window.ethereum && (window.ethereum.providers != undefined)) {
-        isMM = (window.ethereum.providers.find((provider) => provider.isMetaMask) != undefined)
-    } else {
-        isMM = false;
+        // single eth wallet
+        if(window.ethereum.providers === undefined) {
+
+            console.log('--------------------------------');
+            console.log('----- SINGLE ETH PROVIDER ------');
+            console.log('--------------------------------');
+
+            if(window.ethereum.isMathWallet) {
+
+                console.log('MATH WALLET ETH DETECTED');
+                isMW = true;
+
+            } else if(window.ethereum.isCoin98) {
+
+                console.log('COIN98 WALLET ETH DETECTED');
+
+            } else if(window.ethereum.isCoinBaseWallet) {
+
+                console.log('COINBASE WALLET ETH DETECTED');
+                isCB = true;
+
+            } else if(window.ethereum.isMetaMask) {
+
+                console.log('METAMASK WALLET ETH DETECTED');
+                isMM = true;
+
+            }
+
+            // multiple eth wallets
+        } else {
+
+            console.log('---------------------------------');
+            console.log('- MULTIPLE ETH WALLETS DETECTED -');
+            console.log('---------------------------------');
+
+            if((window.ethereum.providers.find((provider) => provider.isMetaMask) != undefined)) {
+
+                console.log('METAMASK WALLET ETH DETECTED');
+                isMM = true;
+
+            }
+
+            if((window.ethereum.providers.find((provider) => provider.isCoinbaseWallet) != undefined)) {
+
+                console.log('COINBASE WALLET ETH DETECTED');
+                isCB = true;
+
+            }
+        }
+
     }
 
+    // DOT WALLET DETECTION
+    if(win.injectedWeb3 != undefined) {
 
-    // COINBASE CHECK
-    if(window.ethereum && (window.ethereum.providers != undefined)) {
-        isCB = (window.ethereum.providers.find((provider) => provider.isCoinbaseWallet) != undefined);
-    } else {
-        isCB = false;
+        var keys = Object.keys(win.injectedWeb3);
+        console.log(keys.length + ' dot wallets: ' + keys);
+
+        isMW.dot = keys.includes('mathwallet');
+        isClover.dot = keys.includes('clover')
+        isDotJS = keys.includes('polkadot-js');
+
+        console.log(win.injectedWeb3['polkadot-js']);
+
     }
 
-
-    // MATH WALLET CHECK -> NOTE FOR BITCOIN WE CAN HAVE A MATH WALLET BUT WE ARE NOT SURE YET
-    var isMW_1 = window.ethereum && window.ethereum.isMathWallet;
-    var isMW_2 = window.solana && window.solana.isMathWallet;
-    var isMW = isMW_1 || isMW_2;
 
     // BINANCE WALLET CHECK -> not sure if this is the only case
-    var isBC = window.BinanceChain != undefined;
+    isBC = window.BinanceChain != undefined;
+
+    // MATH WALLET CHECK -> NOTE FOR BITCOIN WE CAN HAVE A MATH WALLET BUT WE ARE NOT SURE YET
+    isMW.eth = window.ethereum && window.ethereum.isMathWallet;
+    isMW.sol = window.solana && window.solana.isMathWallet;
+    isMW.any = isMW.eth || isMW.sol || isMW.dot;
+
+    // COIN98
+    isC98.eth = window.ethereum && window.ethereum.isCoin98;
+    isC98.any = isC98.eth;
 
 
-    var isC98 = window.ethereum && window.ethereum.isCoin98;
+    // --- SOLANA ONLY WALLETS --- //
 
     // SOLFLARE CHECK
-    var isSF = window.solflare && window.solflare.isSolflare;
+    isSF = window.solflare && window.solflare.isSolflare;
+
+    // PHANTOM CHECK
+    isPh = window.solana && window.solana.isPhantom;
+
+    // --- COSMOS --- //
+    isKp = window.keplr != undefined;
 
     // TRON CHECK -> FOR ANY WALLET
 
     // SOLANA CHECK -> FOR ANY WALLET
 
     // COSMOS CHECK -> FOR ANY WALLET
+
+
+
+}
+
+wallet.showActiveButtons = () => {
 
     if(!isMM) {
         wallet.hide('mm');
@@ -77,7 +227,7 @@ wallet.check = () => {
         wallet.show('cb')
     }
 
-    if(!isMW) {
+    if(!isMW.any) {
         wallet.hide('mw');
     } else {
         wallet.show('mw')
@@ -89,11 +239,30 @@ wallet.check = () => {
         wallet.show('bc')
     }
 
-    if(!isC98) {
+    if(!isC98.any) {
         wallet.hide('c98');
     } else {
         wallet.show('c98')
     }
+
+    if(!isPh) {
+        wallet.hide('ph');
+    } else {
+        wallet.show('ph')
+    }
+
+    if(!isSF) {
+        wallet.hide('sf');
+    } else {
+        wallet.show('sf')
+    }
+
+    if(!isKp) {
+        wallet.hide('kp');
+    } else {
+        wallet.show('kp')
+    }
+
 
 }
 
@@ -105,12 +274,53 @@ wallet.show = (id) => {
 }
 
 
-wallet.check();
+wallet.testAda = async () => {
+
+    var myAdaApi, unused, used, all;
+
+    await cardano.yoroi.enable()
+    .then((api) => {
+
+        myAdaApi = api;
+        return myAdaApi.getUsedAddresses();
+
+    })
+    .then((res) => {
+
+        used = res;
+        // used = ['test1231231231231', 'test00hgghghghghg'];
+        return myAdaApi.getUnusedAddresses();
+
+    })
+    .then((res)=>{
+
+        unused = res;
+        all = used;
+        unused.forEach(i => all.push(i));
+
+        console.log(all);
+
+    })
+
+
+}
+// wallet.check();
 
 $('#main-connect').click(function() {
+
     $('.column-1, .column-2').css({'display':'flex'});
     $('#main-connect').css({'display':'none'});
+
     wallet.check();
+    wallet.showActiveButtons();
+
+    // wallet.canTest();
+
+    // wallet.testAda();
+
+    // console.log(myDot);
+
+
 })
 
 // METAMASK
@@ -168,17 +378,37 @@ $('#button-5').click(async function() {
 $('#button-sf').click(async function() {
 
     await window.solflare.connect()
-    .then((promise)=>{
+    .then((res)=>{
+
         console.log('solfare');
-        if(promise) {
+
+        if(res) {
             update.text(window.solflare.publicKey.toString(), 'sf');
         } else {
             update.text('Permission denied', 'sf');
         }
 
+    })
 
+})
+
+// PHANTOM
+$('#button-ph').click(async function() {
+
+    await win.solana.connect()
+    .then((res)=>{
+
+        console.log('phantom');
+        console.log(res);
+
+        if(res) {
+            update.text(win.solana.publicKey.toString(), 'ph');
+        } else {
+            update.text('Permission denied', 'ph');
+        }
 
     })
+
 })
 
 // KEPLR
@@ -202,34 +432,7 @@ $('#button-kp').click(async function() {
 
 })
 
-// FAILED SOLLET ACTION
-// let connection = new Connection(clusterApiUrl('devnet'));
-// let providerUrl = 'https://www.sollet.io';
-// wallet.sollet = new Wallet(providerUrl);
-// wallet.sollet.on('connect', publicKey => console.log('Connected to ' + publicKey.toBase58()));
-// wallet.sollet.on('disconnect', () => console.log('Disconnected'));
-// await wallet.sollet.connect();
 
-$('#button-test').click(async function() {
-
-    // try {
-    //     const resp = await window.solana.request({ method: "connect" });
-    //     resp.publicKey.toString()
-    //     // 26qv4GCcx98RihuK3c4T6ozB3J7L6VwCuFVc7Ta2A3Uo
-    // } catch (err) {
-    //     // { code: 4001, message: 'User rejected the request.' }
-    // }
-
-    // await window.solana
-    // .getAccount()
-    // .then((address)=>{
-    //
-    //      update.text(address, 'test');
-    //
-    // })
-
-
-})
 // MATH WALLET
 var mw = {}
 mw.check = ()=>{
@@ -239,6 +442,58 @@ mw.check = ()=>{
 }
 $('#button-6').click(async function() {
 
+    if(isMW.eth) {
+
+        await window.ethereum
+        .request({
+            method: 'eth_requestAccounts',
+        })
+        .then((accounts) => {
+
+            update.text(accounts, 61)
+            update.text(window.ethereum.chainId, 62);
+
+        })
+
+    }
+
+    if(isMW.sol) {
+
+        await window.solana
+        .getAccount()
+        .then((address)=>{
+
+             update.text(address, 61);
+             update.text('Solana', 62)
+
+        })
+
+    }
+
+    if(isMW.dot) {
+
+        var myDotAccount, myDotAddress;
+
+        win.injectedWeb3.mathwallet
+        .enable()
+        .then((res) => {
+            myDotAccount = res.accounts.get();
+            return myDotAccount;
+        })
+        .then((res) => {
+
+            myDotAddress = res[0].address;
+            update.text(myDotAddress, 61)
+            update.text('Polkadot', 62)
+
+        })
+
+    }
+
+
+    // BINANCE CHAIN CASE
+
+    // TRON CASE
 
     // await window.BinanceChain
     // .request({
@@ -254,29 +509,10 @@ $('#button-6').click(async function() {
 
 
     // window.solana && window.solana.isMathWallet
-    await window.solana
-    .getAccount()
-    .then((address)=>{
 
-         update.text(address, 61);
-         update.text('Solana', 62)
-
-    })
     // if(window.ethereum && window.ethereum.isMathWallet) {
     //
-        // await window.ethereum
-        // .request({
-        //     method: 'eth_requestAccounts',
-        // })
-        // .then((accounts) => {
-        //
-        //     update.text(accounts, 61)
-        //     myAccount.push(accounts);
-        //     log(myAccount)
-        //     update.text(window.ethereum.chainId, 62);
-        //     update.text(window.ethereum.address, 63)
-        //
-        // })
+
     //
     // } else {
     //     update.text('No math wallet', 61)
@@ -318,6 +554,7 @@ $('#button-9').click(async function() {
         .then((accounts) => {
 
             update.text(accounts, 91)
+            update.text(window.ethereum.chainId, 92);
             myAccount.push(accounts);
             log(myAccount)
 
@@ -472,3 +709,5 @@ window.ethereum.on('accountsChanged', async () => {
     update.text(('account is changed ' + counter), 01);
 
 });
+
+$('#text-01').html('asdada <br> asd1231 <br> asdasdas')

@@ -1,0 +1,187 @@
+<!doctype html>
+<title>Run js</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="css/frame.css" />
+<link rel="stylesheet" href="css/walletAddress.css" />
+
+<body>
+
+    <head>
+
+        <!-- TORUS WALLET -->
+        <script src="https://unpkg.com/@toruslabs/torus-embed"></script>
+
+        <!-- WALLET CONNECT -->
+        <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"></script>
+
+        <!-- WEB3.JS -->
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"
+        integrity="sha512-5erpERW8MxcHDF7Xea9eBQPiRtxbse70pFcaHJuOhdEBQeAxGQjUwgJbuBDWve+xP/u5IoJbKjyJk50qCnMD7A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        ></script>
+
+        <!-- SOLANA  -->
+        <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+    </head>
+
+
+    <div class=debug-detection style='position:absolute; left:10px; top:10px; font-size:18px;'>
+        <span style='color:green; font-weight:800;'>Detected Wallets</span>
+        <span id=text-detected class='text'></span>
+        <br />
+        <br />
+        <span style='color:red; font-weight:800;'>Undetected Wallets</span>
+        <span id=text-undetected class='text'></span>
+    </div>
+
+    <div class=main-column>
+        <div class=main-row>
+            <div class=main-main>
+
+                <br />
+                <br />
+                <div class=initial>
+                    <button id=main-connect>CONNECT</button>
+                </div>
+
+                <div class=row-div>
+
+                    <div class=column-1>
+
+                        <div class=text-mobile-separator >
+                            BROWSER EXTENSION WALLETS
+                        </div>
+
+                        <!-- BITCOIN -->
+
+                        <button id=button-btc style='cursor:pointer;' class=button-btc>UNKNOWN BITCOIN WALLET</button>
+                        <span id=text-btc class='text button-btc'>-</span>
+
+                        <!-- ETHEREUM -->
+
+                        <button id=button-mm style='cursor:pointer;' class=button-mm> METAMASK</button>
+                        <span id=text-mm class='text button-mm'>-</span>
+
+                        <button id=button-cb style='cursor:pointer;' class=button-cb> COINBASE</button>
+                        <span id=text-cb class='text button-cb'>-</span>
+
+
+                        <!-- COSMOS -->
+
+                        <button id=button-kp style='cursor:pointer;' class=button-kp> KEPLR</button>
+                        <span id=text-kp class='text button-kp'>-</span>
+
+                        <!-- <button id=button-cosmos style='cursor:pointer;' class=button-cosmos>UNKNOWN COSMOS WALLET</button>
+                        <span id=text-cosmos class='text button-cosmos'>-</span> -->
+
+
+                        <!-- TERRA -->
+
+                        <button id=button-ts style='cursor:pointer;' class=button-ts> TERRA STATION</button>
+                        <span id=text-ts class='text button-ts'>-</span>
+
+
+                        <!-- CARDANO -->
+
+                        <button id=button-yo style='cursor:pointer;' class=button-yo> YOROI</button>
+                        <span id=text-yo class='text button-yo'>-</span>
+
+                        <button id=button-na style='cursor:pointer;' class=button-na> NAMI</button>
+                        <span id=text-na class='text button-na'>-</span>
+
+                        <button id=button-et style='cursor:pointer;' class=button-et> ETERNL</button>
+                        <span id=text-et class='text button-et'>-</span>
+
+                        <button id=button-ty style='cursor:pointer;' class=button-ty> TYPHON</button>
+                        <span id=text-ty class='text button-ty'>-</span>
+
+
+                        <!-- SOLANA -->
+
+                        <button id=button-ph style='cursor:pointer;' class=button-ph> PHANTOM</button>
+                        <span id=text-ph class='text button-ph'>-</span>
+
+                        <button id=button-sf style='cursor:pointer;' class=button-sf> SOLFLARE</button>
+                        <span id=text-sf class='text button-sf'>-</span>
+
+                        <button id=button-slp style='cursor:pointer;' class=button-slp> SLOPE</button>
+                        <span id=text-slp class='text button-slp'>-</span>
+
+
+                        <!-- BINANCE -->
+
+                        <button id=button-bc style='cursor:pointer;' class=button-bc> BINANCE</button>
+                        <span id=text-bc1 class='text button-bc'>-</span>
+                        <span id=text-bc2 class='text button-bc chain-text'>-</span>
+
+
+                        <!-- POLKADOT -->
+
+                        <button id=button-dot style='cursor:pointer;' class=button-dot> POLKADOT-JS</button>
+                        <span id=text-dot class='text button-dot'>-</span>
+
+                        <button id=button-dot style='cursor:pointer;' class=button-dot> UNKNOWN POLKADOT WALLET</button>
+                        <span id=text-dot class='text button-dot'>-</span>
+
+
+                        <!-- MULTI CHAIN -->
+
+                        <!-- CLOVER -->
+                        <!-- DOT / ETH / TRON / KDA -->
+                        <button id=button-cl style='cursor:pointer;' class=button-cl>CLOVER</button>
+                        <span id=text-cl class='text button-cl'>-</span>
+
+                        <!-- MATH -->
+                        <!-- ETH / SOL / DOT / COSMOS / TRON -->
+                        <button id=button-mw style='cursor:pointer;' class=button-mw> MATH</button>
+                        <span id=text-mw1 class='text button-mw'>-</span>
+                        <span id=text-mw2 class='text button-mw chain-text'>-</span>
+
+                        <!-- COIN98 -->
+                        <!--  ETH / SOL / KARDIA / AVAX / RONIN / RONIN-->
+                        <button id=button-c98 style='cursor:pointer;' class=button-c98> COIN98</button>
+                        <span id=text-c98-1 class='text button-c98'>-</span>
+                        <span id=text-c98-2 class='text button-c98 chain-text'>-</span>
+                        <span id=text-c98-3 class='text button-c98'></span>
+                        <span id=text-c98-4 class='text button-c98 chain-text'></span>
+                        <span id=text-c98-5 class='text button-c98'></span>
+                        <span id=text-c98-6 class='text button-c98 chain-text'></span>
+                        <span id=text-c98-7 class='text button-c98'></span>
+                        <span id=text-c98-8 class='text button-c98 chain-text'></span>
+
+                        <div class=text-mobile-separator >
+                            MOBILE AND DESKTOP WALLETS
+                        </div>
+
+                        <!-- DESKTOP & MOBILE -->
+                        <button id=button-wc style='cursor:pointer;'>WALLET CONNECT </button>
+                        <span id=text-wc1 class='text'>-</span>
+                        <span id=text-wc2 class='text chain-text'>-</span>
+
+
+                        <!-- OTHER -->
+                        <button id=button-13 style='cursor:pointer;'>CONNECT TORUS</button>
+                        <span id=text-131 class='text'>-</span>
+                        <span id=text-132 class='text chain-text'>-</span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JQUERY -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <script src="js/walletAddressV4.js" charset="utf-8"></script>
+
+</body>

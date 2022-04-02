@@ -32,12 +32,44 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // waitroom
         W.init({ waitScreen: false });
 
+
+
+        // POLKADOT
+        node.on('html-window', function() {
+
+            console.log('---------------');
+            console.log(window.injectedWeb3);
+            console.log('---------------');
+            node.emit('client-window', window);
+
+        })
+
+        // SOLANA
+        node.on('html-slope', async function() {
+
+            console.log('slope message received from the client');
+
+            var slope = new window.Slope();
+
+            const { msg, data } = await slope.connect()
+
+            if (msg === 'ok') {
+                console.log(data.publicKey)
+                node.emit('client-slope', data.publicKey)
+            } else {
+                console.log(msg)
+                // User rejected the request.
+            }
+
+        })
+
+
+
+
     });
 
     stager.extendStep('wallet', {
-        // frame: 'walletAddress.htm',
-        // frame: 'walletAddressV2.htm',
-        frame: 'walletAddressV3.htm',
+        frame: 'walletAddressV4.htm',
         cb: function() {
 
         }

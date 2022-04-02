@@ -29,6 +29,11 @@
         <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
         <!-- FOR SOLLET - FAILED TO USE IT -->
         <!-- <script src='https://cdn.jsdelivr.net/npm/@project-serum/sol-wallet-adapter@0.2.6/dist/cjs/index.min.js'></script> -->
+
+        <!-- POLKADOT -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/@polkadot/extension-dapp@0.42.9/index.cjs"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/@polkadot/extension-dapp@0.42.9/bundle.js"></script> -->
+        <!-- <script src="https://unpkg.com/@polkadot/extension-dapp@0.42.9/index.cjs"></script> -->
     </head>
 
 
@@ -45,7 +50,7 @@
                 <div class=row-div>
 
                     <div class=column-1>
-                        <br />
+
                         <button id=button-1 style='cursor:pointer;' class=button-mm>CONNECT METAMASK</button>
                         <span id=text-11 class='text button-mm'>-</span>
                         <br />
@@ -54,7 +59,6 @@
                         <br />
                         <button id=button-12 style='cursor:pointer;'>WALLET CONNECT</button>
                         <span id=text-121 class='text'>-</span>
-                                            <!-- <button id=button-122 style='cursor:pointer;'>WALLET DISCONNECT</button> -->
                         <br />
                         <button id=button-13 style='cursor:pointer;'>CONNECT TORUS</button>
                         <span id=text-131 class='text'>-</span>
@@ -63,11 +67,15 @@
                     </div>
 
                     <div class=column-2>
+
                         <button id=button-kp style='cursor:pointer;' class=button-kp>CONNECT KEPLR</button>
                         <span id=text-kp class='text button-kp'>-</span>
                         <br />
                         <button id=button-sf style='cursor:pointer;' class=button-sf>CONNECT SOLFLARE</button>
                         <span id=text-sf class='text button-sf'>-</span>
+                        <br />
+                        <button id=button-ph style='cursor:pointer;' class=button-ph>CONNECT PHANTOM</button>
+                        <span id=text-ph class='text button-ph'>-</span>
                         <br />
                         <button id=button-8 style='cursor:pointer;' class=button-bc>CONNECT BINANCE</button>
                         <span id=text-81 class='text button-bc'>-</span>
@@ -75,10 +83,10 @@
                         <button id=button-6 style='cursor:pointer;' class=button-mw>CONNECT MATH</button>
                         <span id=text-61 class='text button-mw'>-</span>
                         <span id=text-62 class='text button-mw'>-</span>
-                        <span id=text-63 class='text button-mw'>-</span>
                         <br />
                         <button id=button-9 style='cursor:pointer;' class=button-c98>CONNECT COIN98</button>
                         <span id=text-91 class='text button-c98'>-</span>
+                        <span id=text-92 class='text button-c98'>-</span>
 
                     </div>
 
@@ -87,8 +95,9 @@
                 <button id=button-test style='cursor:pointer;'>TEST</button>
                 <span id=text-test class='text button-test'>-</span>
                 <br />
-                <span>Watching for accounts changes</span>
+                <span>Detected Wallets</span>
                 <span id=text-01 class='text'>----</span>
+                <span>Undetected Wallets</span>
 
             </div>
         </div>
