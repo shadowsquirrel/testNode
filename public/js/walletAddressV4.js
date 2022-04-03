@@ -61,6 +61,8 @@ var wallet = {
             tronlink: false,
             // algo
             algosigner: false,
+            // mina
+            auro: false,
             // multi-chain
             math: false,
             coin98: false,
@@ -109,6 +111,9 @@ var wallet = {
         },
         algo: {
             algosigner: undefined,
+        },
+        mina: {
+            auro: undefined,
         },
         // ic: {
         //     plug: undefined,
@@ -209,6 +214,10 @@ var wallet = {
             isAlgosigner: false,
         },
 
+        // MINA
+        mina: {
+            isAuro: false,
+        },
 
         // --- MULTI CHAIN WALLETS --- //
 
@@ -541,6 +550,11 @@ wallet.checkAll = () => {
         wallet.check.algo.isAlgosigner = true;
     }
 
+    // MINA
+    if(win.mina != undefined) {
+        wallet.check.mina.isAuro = true;
+    }
+
 }
 
 wallet.report = () => {
@@ -676,6 +690,14 @@ wallet.report = () => {
         undetected += '<br> algo - Algosigner';
     }
 
+    // mina
+
+    if(check.mina.isAuro) {
+        detected += '<br> mina - Auro';
+    } else {
+        undetected += '<br> mina - Auro';
+    }
+
     // multi
 
     if(check.isMathWallet.any()) {
@@ -804,6 +826,14 @@ wallet.button.showActive = () => {
         button.hide('algo');
     } else {
         button.show('algo')
+    }
+
+    // --- MINA --- //
+
+    if(!check.mina.isAuro) {
+        button.hide('mina');
+    } else {
+        button.show('mina');
     }
 
     // --- CARDANO --- //
@@ -1360,6 +1390,22 @@ $('#button-algo').click(async function() {
         })
     } catch (e) {
         console.log('algosigner wallet error: ' + e);
+    }
+
+})
+
+
+
+// --- MINA --- //
+$('#button-mina').click(async function() {
+
+    try {
+        window.mina.requestAccounts().then((accounts) => {
+            wallet.address.mina.auro = accounts[0];
+            update.text(accounts[0], 'mina');
+        })
+    } catch (e) {
+        console.log('auro wallet error: ' + e);
     }
 
 })
