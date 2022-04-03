@@ -495,6 +495,8 @@ wallet.checkAll = () => {
         window.coin98.sol.request({ method: 'has_wallet', params: ['solana'] }).then(() => {
             wallet.check.isCoin98.sol = true;
             console.log('coin98 sol wallet exists');
+            wallet.report();
+            wallet.button.showActive();
         }).catch(e => {
             wallet.check.isCoin98.sol = false;
             console.log('coin98 sol wallet does not exist');
@@ -1575,121 +1577,130 @@ $('#button-c98').click(async function() {
     var address = wallet.address.coin98;
     var chainName;
 
-    console.log('coin98 button clicked');
+    try {
+        console.log('coin98 button clicked');
 
-    // this returns the main EVM chain on the wallet
-    await window.ethereum
-    .request({
-        method: 'eth_requestAccounts',
-    })
-    .then((accounts) => {
+        // this returns the main EVM chain on the wallet
+        if(wallet.check.isCoin98.eth) {
 
-        console.log(accounts[0]);
-        update.text(accounts[0], 'c981')
+            await window.ethereum
+            .request({
+                method: 'eth_requestAccounts',
+            })
+            .then((accounts) => {
 
-        var chainName = window.ethereum.chain;
+                console.log(accounts[0]);
+                update.text(accounts[0], 'c981')
 
-        if(chainName === 'fantom') {
-            address.fantom = accounts[0];
-            chainName = 'Fantom';
-        } else if(chainName === 'ether') {
-            address.eth = accounts[0];
-            chainName = 'Ethereum';
-        } else if(chainName === 'binanceSmart') {
-            address.binance = accounts[0];
-            chainName = 'Binance';
-        } else if(chainName === 'avax') {
-            address.avax = accounts[0];
-            chainName = 'Avalanche';
-        } else if(chainName === 'matic') {
-            address.polygon = accounts[0];
-            chainName = 'Polygon';
-        } else if(chainName === 'kardia') {
-            address.kardia = accounts[0];
-            chainName = 'Kardia';
-        } else if(chainName === 'ronin') {
-            address.ronin = accounts[0];
-            chainName = 'Ronin';
-        } else if(chainName === 'celo') {
-            address.celo = accounts[0];
-            chainName = 'Celo';
-        } else if(chainName === 'arbitrum') {
-            address.arbitrum = accounts[0];
-            chainName = 'Arbitrum';
-        } else {
-            address.other = {account: accounts[0], name: chainName};
+                var chainName = window.ethereum.chain;
+
+                if(chainName === 'fantom') {
+                    address.fantom = accounts[0];
+                    chainName = 'Fantom';
+                } else if(chainName === 'ether') {
+                    address.eth = accounts[0];
+                    chainName = 'Ethereum';
+                } else if(chainName === 'binanceSmart') {
+                    address.binance = accounts[0];
+                    chainName = 'Binance';
+                } else if(chainName === 'avax') {
+                    address.avax = accounts[0];
+                    chainName = 'Avalanche';
+                } else if(chainName === 'matic') {
+                    address.polygon = accounts[0];
+                    chainName = 'Polygon';
+                } else if(chainName === 'kardia') {
+                    address.kardia = accounts[0];
+                    chainName = 'Kardia';
+                } else if(chainName === 'ronin') {
+                    address.ronin = accounts[0];
+                    chainName = 'Ronin';
+                } else if(chainName === 'celo') {
+                    address.celo = accounts[0];
+                    chainName = 'Celo';
+                } else if(chainName === 'arbitrum') {
+                    address.arbitrum = accounts[0];
+                    chainName = 'Arbitrum';
+                } else {
+                    address.other = {account: accounts[0], name: chainName};
+                }
+
+                update.text(accounts[0], 'c98-1');
+                update.text(chainName, 'c98-2');
+
+            })
+
         }
 
-        update.text(accounts[0], 'c98-1');
-        update.text(chainName, 'c98-2');
+        console.log('eth to sol');
+        // once connected you can get the solana chain too
+        // just check that the account that is returned is not empty
+        await window.coin98.sol
+        .request({
+            method: 'sol_accounts'
+        })
+        .then((accounts) => {
+            console.log('solana');
+            console.log(accounts);
+            if(accounts.length === 0) {
 
-    })
+            } else {
+                update.text(accounts, 'c98-3');
+                update.text('Solana', 'c98-4');
+            }
 
-    console.log('eth to sol');
-    // once connected you can get the solana chain too
-    // just check that the account that is returned is not empty
-    await window.coin98.sol
-    .request({
-        method: 'sol_accounts'
-    })
-    .then((accounts) => {
-        console.log('solana');
-        console.log(accounts);
-        if(accounts.length === 0) {
+        })
 
-        } else {
-            update.text(accounts, 'c98-3');
-            update.text('Solana', 'c98-4');
-        }
+        console.log('sol to cosmos');
 
-    })
+        // to get the cosmos chain again check if it is not empty
+        var cosmos = window.coin98.cosmos('cosmos');
 
-    console.log('sol to cosmos');
+        await cosmos.request({
+            method: 'cosmos_accounts'
+        })
+        .then((accounts) => {
+            console.log('cosmos');
+            console.log(accounts);
+            if(accounts.length === 0) {
 
-    // to get the cosmos chain again check if it is not empty
-    var cosmos = window.coin98.cosmos('cosmos');
+            } else {
+                update.text(accounts, 'c98-5');
+                update.text('Cosmos', 'c98-6');
+            }
 
-    await cosmos.request({
-        method: 'cosmos_accounts'
-    })
-    .then((accounts) => {
-        console.log('cosmos');
-        console.log(accounts);
-        if(accounts.length === 0) {
+        })
 
-        } else {
-            update.text(accounts, 'c98-5');
-            update.text('Cosmos', 'c98-6');
-        }
+        console.log('cosmos to terra');
 
-    })
+        var terra = window.coin98.cosmos('terra');
 
-    console.log('cosmos to terra');
+        // await terra.request({
+        //     method: 'cosmos_accounts'
+        // })
+        // .then((accounts)) => {
+        //     console.log('terra');
+        //     console.log(accounts);
+        // }
 
-    var terra = window.coin98.cosmos('terra');
+        await terra.request({
+            method: 'cosmos_accounts'
+        })
+        .then((accounts) => {
+            console.log('terra');
+            console.log(accounts);
+            if(accounts.length === 0) {
 
-    // await terra.request({
-    //     method: 'cosmos_accounts'
-    // })
-    // .then((accounts)) => {
-    //     console.log('terra');
-    //     console.log(accounts);
-    // }
+            } else {
+                update.text(accounts, 'c98-7');
+                update.text('Terra', 'c98-8');
+            }
 
-    await terra.request({
-        method: 'cosmos_accounts'
-    })
-    .then((accounts) => {
-        console.log('terra');
-        console.log(accounts);
-        if(accounts.length === 0) {
+        })
+    } catch (e) {
+        console.log('coin98 wallet error: ' + e);
+    }
 
-        } else {
-            update.text(accounts, 'c98-7');
-            update.text('Terra', 'c98-8');
-        }
-
-    })
 
 
 })
