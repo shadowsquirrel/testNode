@@ -39,6 +39,7 @@ var wallet = {
             // eth
             metamask: false,
             coinbase: false,
+            xdefi: false,
             // ada
             yoroi: false,
             nami: false,
@@ -73,6 +74,7 @@ var wallet = {
         eth: {
             metamask: undefined,
             coinbase: undefined,
+            xdefi: undefined,
         },
         binance: {
             eth: undefined,
@@ -145,6 +147,7 @@ var wallet = {
         eth: {
             isMetaMask: false,
             isCoinBase: false,
+            isXdefi: false,
             multipleProviders: false,
             singleProvider: false,
         },
@@ -348,7 +351,10 @@ wallet.checkAll = () => {
 
     }
 
-
+    // XDEFI ETH DETECTION
+    if(win.xfi && win.xfi.ethereum) {
+        wallet.check.eth.isXdefi = true;
+    }
 
     // DOT WALLET DETECTION
     //
@@ -375,6 +381,9 @@ wallet.checkAll = () => {
         if(diff > 0) {
             console.log('THERE ARE ' + diff + ' MANY UNDETECTED DOT WALLETS');
             wallet.check.dot.isUnknown = true;
+            console.log(sum);
+            console.log(total);
+
 
             // need to spot the unknown wallet from the keys
 
@@ -530,6 +539,12 @@ wallet.report = () => {
         undetected += '<br> eth - Metamask';
     }
 
+    if(check.eth.isXdefi) {
+        detected += '<br> eth - XDefi';
+    } else {
+        undetected += '<br> eth - XDefi';
+    }
+
     // dot
 
     if(check.eth.isCoinBase) {
@@ -682,6 +697,12 @@ wallet.button.showActive = () => {
         button.show('cb')
     }
 
+    if(!check.eth.isXdefi) {
+        button.hide('xdf');
+    } else {
+        button.show('xdf')
+    }
+
     // --- BINANCE --- //
 
     if(!check.binance.isBinanceChain) {
@@ -809,6 +830,17 @@ $('#main-connect').click(function() {
 
 })
 
+// $('#main-test').click(async function() {
+//
+//
+//     await win.xfi.ethereum
+//     .request({
+//         method: 'eth_requestAccounts'
+//     })
+//     .then((accounts) => {
+//         console.log(accounts);
+//     })
+// })
 
 
 // AGNOSTIC BITCOIN WALLET
@@ -833,6 +865,7 @@ $('#button-btc').click(async function() {
     update.text(wallet.address.btc.unknown, 'btc')
 
 })
+
 
 
 // --- ETHEREUM --- //
@@ -903,7 +936,25 @@ $('#button-cb').click(async function() {
 
 })
 
+// XDEFI
+$('#button-xdf').click(async function() {
 
+    try {
+
+        await win.xfi.ethereum
+        .request({
+            method: 'eth_requestAccounts'
+        })
+        .then((accounts) => {
+            wallet.address.eth.xdefi = accounts[0];
+            update.text(wallet.address.eth.xdefi, 'xdf');
+        })
+
+    } catch (e) {
+        console.log('xdefi wallet error: ' + e);
+    }
+
+})
 
 // --- SOLANA --- //
 
