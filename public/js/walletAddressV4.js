@@ -43,6 +43,7 @@ var wallet = {
             yoroi: false,
             nami: false,
             eternl: false,
+            flint: false,
             typhon: false,
             // sol
             phantom: false,
@@ -55,6 +56,8 @@ var wallet = {
             // terra: false,
             // binance
             binance: false,
+            // tron
+            tronlink: false,
             // multi-chain
             math: false,
             coin98: false,
@@ -80,6 +83,7 @@ var wallet = {
             yoroi: undefined,
             nami: undefined,
             eternl: undefined,
+            flint: undefined,
             typhon: undefined,
         },
         sol: {
@@ -97,7 +101,7 @@ var wallet = {
             // unknown: undefined,
         },
         tron: {
-
+            tronlink: undefined,
         },
         math: {
             eth: undefined,
@@ -150,6 +154,7 @@ var wallet = {
             isYoroi: false,
             isNami: false,
             isEternl: false,
+            isFlint: false,
             isTyphon: false,
         },
 
@@ -176,6 +181,11 @@ var wallet = {
         // BINANCE CHAIN
         binance: {
             isBinanceChain: false,
+        },
+
+        // TRON
+        tron: {
+            isTronlink: false,
         },
 
         // --- MULTI CHAIN WALLETS --- //
@@ -417,6 +427,9 @@ wallet.checkAll = () => {
         if(win.cardano.eternl != undefined) {
             wallet.check.ada.isEternl = true;
         }
+        if(win.cardano.flint != undefined) {
+            wallet.check.ada.isFlint = true;
+        }
         if(win.cardano.typhon != undefined) {
             wallet.check.ada.isTyphon = true;
         }
@@ -480,11 +493,12 @@ wallet.checkAll = () => {
 
 
     // TRON
+    // math wallet
     if(win.tronWeb != undefined) {
-
-        // math wallet
         wallet.check.isMathWallet.tron = (win.tronWeb.isMathWallet != undefined) ? tronWeb.isMathWallet : false;
-
+    }
+    if(win.tronLink != undefined) {
+        wallet.check.tron.isTronlink = true;
     }
 
 
@@ -556,6 +570,12 @@ wallet.report = () => {
         undetected += '<br> ada - Eternl';
     }
 
+    if(check.ada.isFlint) {
+        detected += '<br> ada - Flint';
+    } else {
+        undetected += '<br> ada - Flint';
+    }
+
     if(check.ada.isTyphon) {
         detected += '<br> ada - Typhon';
     } else {
@@ -595,6 +615,14 @@ wallet.report = () => {
     // } else {
     //     undetected += '<br> terra - Terra Station';
     // }
+
+    // tron
+
+    if(check.tron.isTronlink) {
+        detected += '<br> tron - Tronlink';
+    } else {
+        undetected += '<br> tron - Tronlink';
+    }
 
     // multi
 
@@ -704,6 +732,14 @@ wallet.button.showActive = () => {
         button.show('dot')
     }
 
+    // --- TRON --- //
+
+    if(!check.tron.isTronlink) {
+        button.hide('tron');
+    } else {
+        button.show('tron')
+    }
+
     // --- CARDANO --- //
 
     if(!check.ada.isYoroi) {
@@ -722,6 +758,18 @@ wallet.button.showActive = () => {
         button.hide('et');
     } else {
         button.show('et')
+    }
+
+    if(!check.ada.isFlint) {
+        button.hide('flint');
+    } else {
+        button.show('flint')
+    }
+
+    if(!check.ada.isTyphon) {
+        button.hide('ty');
+    } else {
+        button.show('ty')
     }
 
     // --- MULTI CHAIN --- //
@@ -1098,6 +1146,42 @@ $('#button-et').click(async function() {
 
 })
 
+// FLINT
+$('#button-flint').click(async function() {
+
+    var myAdaApi, unused, used, all;
+
+    try {
+        await win.cardano.flint.enable()
+        .then((api) => {
+
+            myAdaApi = api;
+            return myAdaApi.getUsedAddresses();
+
+        })
+        .then((res) => {
+
+            used = res;
+            // used = ['test1231231231231', 'test00hgghghghghg'];
+            return myAdaApi.getUnusedAddresses();
+
+        })
+        .then((res)=>{
+
+            unused = res;
+            all = used;
+            unused.forEach(i => all.push(i));
+            wallet.address.ada.flint = all;
+            update.text(multiplAddressConverter(all), 'flint')
+            console.log(multiplAddressConverter(all));
+
+        })
+    } catch (e) {
+        console.log('flint wallet error: ' + e);
+    }
+
+})
+
 // TYPHON
 $('#button-ty').click(async function() {
 
@@ -1141,6 +1225,30 @@ $('#button-dot').click(async function() {
 })
 
 
+
+// ---- TRON --- //
+
+// TRONLINK
+$('#button-tron').click(async function() {
+
+    try {
+
+        var address = wallet.address.tron;
+
+        win.tronLink.request({
+            method:'tron_requestAccounts'
+        })
+        .then(()=>{
+            address.tronlink = win.tronWeb.defaultAddress.base58;
+            update.text(address.tronlink, 'tron')
+        })
+
+
+    } catch (e) {
+        console.log('Tronlink wallet error: ' + e);
+    }
+
+})
 
 // --- MULTI CHAIN --- //
 
