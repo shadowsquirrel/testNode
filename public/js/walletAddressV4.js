@@ -115,6 +115,9 @@ var wallet = {
         mina: {
             auro: undefined,
         },
+        kardia: {
+            kardia: undefined,
+        },
         // ic: {
         //     plug: undefined,
         // },
@@ -217,6 +220,11 @@ var wallet = {
         // MINA
         mina: {
             isAuro: false,
+        },
+
+        // KARDIACHAIN
+        kardia: {
+            isKardia: false,
         },
 
         // --- MULTI CHAIN WALLETS --- //
@@ -500,6 +508,13 @@ wallet.checkAll = () => {
     //
     if(window.coin98 != undefined) {
 
+        // kardiachain
+        if(win.kardiachain != undefined) {
+            if(win.kardiachain.isCoin98) {
+                wallet.check.isCoin98.kardia = true;
+            }
+        }
+
         // solana
         window.coin98.sol.request({ method: 'has_wallet', params: ['solana'] }).then(() => {
             wallet.check.isCoin98.sol = true;
@@ -538,6 +553,14 @@ wallet.checkAll = () => {
     }
     if(win.tronLink != undefined) {
         wallet.check.tron.isTronlink = true;
+    }
+
+    // KARDIACHAIN
+    // if coin98 is not active / conflicting
+    if(!win.kardiachain.isCoin98) {
+        if(win.kardiachain.isKaiWallet) {
+            wallet.check.kardia.isKardia = true;
+        }
     }
 
     // INTERNET COMPUTER
@@ -698,6 +721,14 @@ wallet.report = () => {
         undetected += '<br> mina - Auro';
     }
 
+    // kardia
+
+    if(check.kardia.isKardia) {
+        detected += '<br> kardia - Kai Wallet';
+    } else {
+        undetected += '<br> kardia - Kai Wallet';
+    }
+
     // multi
 
     if(check.isMathWallet.any()) {
@@ -834,6 +865,14 @@ wallet.button.showActive = () => {
         button.hide('mina');
     } else {
         button.show('mina');
+    }
+
+    // --- KARDIA --- //
+
+    if(!check.kardia.isKardia) {
+        button.hide('kardia');
+    } else {
+        button.show('kardia');
     }
 
     // --- CARDANO --- //
@@ -1410,6 +1449,22 @@ $('#button-mina').click(async function() {
 
 })
 
+
+
+// --- KARDIA CHAIN --- //
+$('#button-kardia').click(async function() {
+
+    try {
+        win.kardiachain.enable().then((accounts) => {
+            wallet.address.kardia.kardia = accounts[0];
+            update.text(accounts[0], 'kardia');
+        })
+    } catch (e) {
+        console.log('kardia wallet error: ' + e);
+    }
+
+})
+
 // --- INTERNET COMPUTER --- //
 
 // PLUG
@@ -1681,21 +1736,35 @@ $('#button-c98').click(async function() {
         console.log('eth to sol');
         // once connected you can get the solana chain too
         // just check that the account that is returned is not empty
-        await window.coin98.sol
-        .request({
-            method: 'sol_accounts'
-        })
-        .then((accounts) => {
-            console.log('solana');
-            console.log(accounts);
-            if(accounts.length === 0) {
+        if(wallet.check.isCoin98.sol) {
 
-            } else {
-                update.text(accounts, 'c98-3');
-                update.text('Solana', 'c98-4');
-            }
+            await window.coin98.sol
+            .request({
+                method: 'sol_accounts'
+            })
+            .then((accounts) => {
+                console.log('solana');
+                console.log(accounts);
+                if(accounts.length === 0) {
 
-        })
+                } else {
+                    update.text(accounts, 'c98-3');
+                    update.text('Solana', 'c98-4');
+                }
+
+            })
+
+        }
+
+        if(wallet.check.isCoin98.kardia) {
+
+            await win.kardiachain.enable().then((accounts) => {
+                wallet.address.coin98.kardia = accounts[0];
+                update.text(accounts[0], 'c98-9');
+                update.text('Kardia', 'c98-10');
+            })
+
+        }
 
         console.log('sol to cosmos');
 
