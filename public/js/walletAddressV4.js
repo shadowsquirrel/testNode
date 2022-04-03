@@ -226,22 +226,6 @@ var wallet = {
 
 }
 
-// is this used aside from the below test code?
-var chain = {}
-
-
-// chain.dot = win.injectedWeb3;
-// injectedWeb3.clover.enable()
-// .then((res)=>{
-//     var cloverWallet = res.accounts.get();
-//     console.log(cloverWallet);
-//     return cloverWallet
-// })
-// .then((res)=>{
-//     console.log(res[0].address)
-//     wallet.address.clover = res[0].address
-// })
-
 update.text = (newText, idNum) => {
 
     var span = '#text-' + idNum
@@ -249,7 +233,6 @@ update.text = (newText, idNum) => {
     $(span).html(newText);
 
 }
-
 log = (text) => {
 
     console.log('------------------');
@@ -262,7 +245,6 @@ log = (text) => {
 
 }
 
-var myAccount = [];
 
 
 //---//
@@ -766,41 +748,10 @@ wallet.button.showActive = () => {
 
 
 
-wallet.testAda = async () => {
-
-    var myAdaApi, unused, used, all;
-
-    await cardano.yoroi.enable()
-    .then((api) => {
-
-        myAdaApi = api;
-        return myAdaApi.getUsedAddresses();
-
-    })
-    .then((res) => {
-
-        used = res;
-        // used = ['test1231231231231', 'test00hgghghghghg'];
-        return myAdaApi.getUnusedAddresses();
-
-    })
-    .then((res)=>{
-
-        unused = res;
-        all = used;
-        unused.forEach(i => all.push(i));
-
-        console.log(all);
-
-    })
-
-
-}
-// wallet.check();
 
 $('#main-connect').click(function() {
 
-    $('.column-1, .column-2').css({'display':'flex'});
+    $('.column-1').css({'display':'flex'});
     $('#main-connect').css({'display':'none'});
 
     wallet.checkAll();
@@ -809,6 +760,8 @@ $('#main-connect').click(function() {
     wallet.button.showActive();
 
 })
+
+
 
 // AGNOSTIC BITCOIN WALLET
 $('#button-btc').click(async function() {
@@ -904,7 +857,6 @@ $('#button-cb').click(async function() {
 
 
 
-
 // --- SOLANA --- //
 
 // SOLFLARE - CHECK IF THE ADDRESS IS IN AN ARRAY OR JUST A STRING
@@ -962,6 +914,8 @@ $('#button-slp').click(async function() {
 
 })
 
+
+
 // --- COSMOS --- //
 
 // KEPLR
@@ -1017,6 +971,8 @@ $('#button-kp').click(async function() {
 //     }
 //
 // })
+
+
 
 // --- CARDANO --- //
 
@@ -1164,6 +1120,8 @@ $('#button-ty').click(async function() {
 
 })
 
+
+
 // --- POLKADOT --- //
 
 // DOT-JS
@@ -1181,6 +1139,7 @@ $('#button-dot').click(async function() {
     })
 
 })
+
 
 
 // --- MULTI CHAIN --- //
@@ -1369,7 +1328,6 @@ $('#button-mw').click(async function() {
 
 })
 
-
 // COIN98 WALLET - really hard too many things to cover
 //
 // once you connect you can get all the address for different networks I think?
@@ -1500,38 +1458,12 @@ $('#button-c98').click(async function() {
 
 
 
-// WALLET CONNECT STUFF
+// ---- MOBILE / DESKTOP ---- //
+
+// WALLET CONNECT
+
 var wc = {}
 
-wc.provider = new WalletConnectProvider.default({
-  rpc: {
-    1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
-    56: "https://bsc-dataseed.binance.org/",
-    137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
-    43114: "https://api.avax.network/ext/bc/C/rpc",
-    1666600000: "https://api.harmony.one",
-  },
-  bridge: 'https://bridge.walletconnect.org',
-  qrcodeModalOptions: {
-      mobileLinks: [
-          "rainbow",
-          "metamask",
-          "argent",
-          "trust",
-          "imtoken",
-          "pillar",
-          // 'in'
-      ],
-  },
-});
-
-
-// wc.provider.connector.on("display_uri", (err, payload) => {
-//     const uri = payload.params[0];
-//     CustomQRCodeModal.display(uri);
-// });
-
-// button to connect get address and disconnect
 $('#button-wc').click(async function() {
 
       wc.provider = new WalletConnectProvider.default({
@@ -1601,34 +1533,8 @@ $('#button-wc').click(async function() {
 
 })
 
-// wc.provider.on("connect", (error, payload) => {
-//
-//     console.log('connect walletConnect');
-//     console.log(payload);
-//
-// });
-//
-// wc.provider.on("chainChanged", (chainId) => {
-//
-//     console.log('chain changed walletConnect');
-//     console.log(chainId);
-//
-// });
-// // accounts change listener
-// wc.provider.on("accountsChanged", (accounts) => {
-//
-//     console.log('accounts changed walletConnect');
-//     console.log(accounts);
-//
-// });
-//
-// // disconnect listener
-// wc.provider.on("disconnect", (code, reason) => {
-//
-//     console.log('asdasdasdasd12312asd436gf');
-//     console.log(code, reason);
-//
-// });
+
+// NOT SURE TO KEEP IT
 
 // TORUS WALLET
 $('#button-13').click(async function() {
