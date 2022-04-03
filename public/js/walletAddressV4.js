@@ -59,6 +59,8 @@ var wallet = {
             binance: false,
             // tron
             tronlink: false,
+            // algo
+            algosigner: false,
             // multi-chain
             math: false,
             coin98: false,
@@ -105,6 +107,12 @@ var wallet = {
         tron: {
             tronlink: undefined,
         },
+        algo: {
+            algosigner: undefined,
+        },
+        // ic: {
+        //     plug: undefined,
+        // },
         math: {
             eth: undefined,
             binance: undefined,
@@ -190,6 +198,17 @@ var wallet = {
         tron: {
             isTronlink: false,
         },
+
+        // INTERNET COMPUTER
+        // ic: {
+        //     isPlug: false,
+        // },
+
+        // ALGORAND
+        algo: {
+            isAlgosigner: false,
+        },
+
 
         // --- MULTI CHAIN WALLETS --- //
 
@@ -510,7 +529,15 @@ wallet.checkAll = () => {
         wallet.check.tron.isTronlink = true;
     }
 
+    // INTERNET COMPUTER
+    // if(win.ic && win.ic.plug) {
+    //     wallet.check.ic.isPlug = true;
+    // }
 
+    // ALGORAND
+    if(win.AlgoSigner != undefined) {
+        wallet.check.algo.isAlgosigner = true;
+    }
 
 }
 
@@ -639,6 +666,14 @@ wallet.report = () => {
         undetected += '<br> tron - Tronlink';
     }
 
+    // algorand
+
+    if(check.algo.isAlgosigner) {
+        detected += '<br> algo - Algosigner';
+    } else {
+        undetected += '<br> algo - Algosigner';
+    }
+
     // multi
 
     if(check.isMathWallet.any()) {
@@ -759,6 +794,14 @@ wallet.button.showActive = () => {
         button.hide('tron');
     } else {
         button.show('tron')
+    }
+
+    // --- ALGORAND --- //
+
+    if(!check.algo.isAlgosigner) {
+        button.hide('algo');
+    } else {
+        button.show('algo')
     }
 
     // --- CARDANO --- //
@@ -1300,6 +1343,42 @@ $('#button-tron').click(async function() {
     }
 
 })
+
+
+
+// --- ALGORAND --- //
+$('#button-algo').click(async function() {
+
+    try {
+        await win.AlgoSigner.connect().then(()=>{
+            return win.AlgoSigner.accounts({ledger:'MainNet'});
+        }).then((res)=>{
+            wallet.address.algo.algosigner = res[0].address;
+            update.text(res[0].address, 'algo');
+        })
+    } catch (e) {
+        console.log('algosigner wallet error: ' + e);
+    }
+
+})
+
+// --- INTERNET COMPUTER --- //
+
+// PLUG
+// $('#button-plug').click(async function() {
+//
+//     try {
+//
+//         await win.ic.plug.requestConnect()
+//         .then((res)=> {
+//             console.log(res);
+//         })
+//
+//     } catch (e) {
+//         console.log('plug wallet error: ' + e);
+//     }
+//
+// })
 
 // --- MULTI CHAIN --- //
 
