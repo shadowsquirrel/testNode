@@ -2216,7 +2216,9 @@ wc.generate.browserButton.qrOnly = (string) => {
         wc.provider = new WalletConnectProvider.default({
             rpc: {
                 1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+                25: "https://evm-cronos.crypto.org"
                 56: "https://bsc-dataseed.binance.org/",
+                59: 'https://api.eosargentina.io'
                 137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
                 43114: "https://api.avax.network/ext/bc/C/rpc",
                 1666600000: "https://api.harmony.one",
@@ -2297,7 +2299,9 @@ wc.generate.browserButton.qrAndDesktop = (string) => {
         wc.provider = new WalletConnectProvider.default({
             rpc: {
                 1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+                25: "https://evm-cronos.crypto.org"
                 56: "https://bsc-dataseed.binance.org/",
+                59: 'https://api.eosargentina.io'
                 137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
                 43114: "https://api.avax.network/ext/bc/C/rpc",
                 1666600000: "https://api.harmony.one",
