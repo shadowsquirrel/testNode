@@ -760,9 +760,9 @@ wallet.report = () => {
     }
 
     if(check.isMathWallet.any()) {
-        detected += '<br> eth/atom/avax/tron/fantom/bsc/sol/btc - Math';
+        detected += '<br> eth/atom/avax/tron/fantom/bsc/sol/dot/btc - Math';
     } else {
-        undetected += '<br> eth/atom/avax/tron/fantom/bsc/sol/btc - Math';
+        undetected += '<br> eth/atom/avax/tron/fantom/bsc/sol/dot/btc - Math';
     }
 
     if(check.isCoin98.any()) {
