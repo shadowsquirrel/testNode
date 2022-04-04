@@ -1985,7 +1985,13 @@ $('#button-c98').click(async function() {
 
 // WALLET CONNECT
 
-var wc = {}
+var wc = {
+    hide: {},
+    reformat: {},
+    generate: {
+        browserButton: {},
+    },
+}
 
 $('#button-wc').click(async function() {
 
@@ -2037,25 +2043,374 @@ $('#button-wc').click(async function() {
         })
 
     } catch (switchError) {
+        console.log('Wallet Connect error');
         console.log(switchError.code);
         console.log(switchError);
         // wc.provider.disconnect();
     }
 
 
-    // var request = wc.provider._formatRequest({
-    //     method: 'get_accounts',
-    // });
-    //
-    // wc.provider
-    // ._sendCallRequest(request)
-    // .then(result => {
-    //     // Returns the accounts
-    //     console.log(result);
-    // })
+})
+
+
+// ---- MOBILE WALLET CONNECTION FOR DESKTOPS ---- //
+
+wc.hide.app = () => {
+
+    console.log('hiding the wallet connect window manually');
+
+    $('#walletconnect-wrapper').css({'display':'none'});
+    setTimeout(()=>{
+        $('#walletconnect-wrapper').css({'display':'none'});
+        setTimeout(()=>{
+            $('#walletconnect-wrapper').css({'display':'none'});
+            setTimeout(()=>{
+                $('#walletconnect-wrapper').css({'display':'none'});
+                setTimeout(()=>{
+                    $('#walletconnect-wrapper').css({'display':'none'});
+                    setTimeout(()=>{
+                        $('#walletconnect-wrapper').css({'display':'none'});
+
+                    }, 100)
+                }, 100)
+            }, 100)
+        }, 100)
+    }, 100)
+}
+
+wc.reformat.onlyQR = () => {
+
+    setTimeout(()=>{
+        wc.reformat.onlyQRHelper();
+        setTimeout(()=>{
+            wc.reformat.onlyQRHelper();
+            setTimeout(()=>{
+                wc.reformat.onlyQRHelper();
+                setTimeout(()=>{
+                    wc.reformat.onlyQRHelper();
+                    setTimeout(()=>{
+                        wc.reformat.onlyQRHelper();
+                        setTimeout(()=>{
+                            wc.reformat.onlyQRHelper();
+                            setTimeout(()=>{
+                                wc.reformat.onlyQRHelper();
+                                setTimeout(()=>{
+                                    wc.reformat.onlyQRHelper();
+                                    setTimeout(()=>{
+                                        wc.reformat.onlyQRHelper();
+                                        setTimeout(()=>{
+                                            wc.reformat.onlyQRHelper();
+                                        }, 100)
+                                    }, 100)
+                                }, 100)
+                            }, 100)
+                        }, 100)
+                    }, 100)
+                }, 100)
+            }, 100)
+        }, 100)
+    }, 100)
+
+}
+
+wc.reformat.onlyQRHelper = () => {
+
+    $('.walletconnect-modal__mobile__toggle').css({'display':'none'});
+    $('#walletconnect-qrcode-text').css({'opacity':'0'});
+
+    $('.walletconnect-modal__close__wrapper').css({
+        'filter':'invert(1)',
+        'width':'40px',
+        'height':'40px',
+        'margin-top':'25px',
+        'margin-right':'18px',
+        'padding':'13px'
+    })
+    $('.walletconnect-modal__header').css({
+        'position':'static'
+    })
+
+}
+
+// RAINBOW
+$('#button-wc-rainbow').click(async function() {
+
+    wc.provider = new WalletConnectProvider.default({
+        rpc: {
+            1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+            56: "https://bsc-dataseed.binance.org/",
+            137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+            43114: "https://api.avax.network/ext/bc/C/rpc",
+            1666600000: "https://api.harmony.one",
+        },
+        bridge: 'https://bridge.walletconnect.org',
+    });
+
+
+    console.log('inside wc.connect');
+
+    try {
+
+        wc.reformat.onlyQR();
+
+        await wc.provider
+        .enable()
+        .then((address)=>{
+            update.text(address, 'wc-rainbow-1');
+            wc.web3 = new Web3(wc.provider);
+            wc.web3.eth.getChainId()
+            .then((res)=>{
+
+                if(res === 1) {
+                    chainName = 'Ethereum';
+                    address.eth = someAddress;
+                } else if(res === 56) {
+                    chainName = 'Binance';
+                    address.binance = someAddress;
+                } else if(res === 137) {
+                    chainName = 'Polygon';
+                    address.polygon = someAddress;
+                } else if(res === '0xfa') {
+                    chainName = 'Fantom';
+                    address.fantom = someAddress;
+                } else {
+                    chainName = res;
+                    address.otherEVM = someAddress;
+                }
+                console.log(res);
+                update.text(res, 'wc-rainbow-2')
+            })
+        })
+        .then(()=> {
+            wc.provider.disconnect();
+        })
+
+    } catch (switchError) {
+        console.log('rainbow wallet Connect error');
+        console.log(switchError.code);
+        console.log(switchError);
+    }
 
 })
 
+wc.buttonList = [
+    'rainbow', //checked
+    'argent', //checked
+    'trust', //checked
+    'metamask', //checked
+    'mathWallet', //app did not work
+    // 'crypto', //does not react to the qr code
+    'ledger',
+    'coin98' //checked
+    'coinomi'
+]
+
+wc.generate.browserButton.qrOnly = (string) => {
+
+    var buttonDivString = '#button-wc-' + string;
+
+    $(buttonDivString).click(async function() {
+
+        console.log(string + ' button');
+
+        wc.provider = new WalletConnectProvider.default({
+            rpc: {
+                1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+                56: "https://bsc-dataseed.binance.org/",
+                137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+                43114: "https://api.avax.network/ext/bc/C/rpc",
+                1666600000: "https://api.harmony.one",
+            },
+            bridge: 'https://bridge.walletconnect.org',
+        });
+
+        try {
+
+            wc.reformat.onlyQR();
+
+            await wc.provider
+            .enable()
+            .then((address)=>{
+                update.text(address, ('wc-' + string + '-1'));
+                wc.web3 = new Web3(wc.provider);
+                wc.web3.eth.getChainId()
+                .then((res)=>{
+                    console.log(res);
+                    console.log(typeof res);
+                    if(res === 1) {
+                        chainName = 'Ethereum';
+                        // address.eth = someAddress;
+                    } else if(res === 56) {
+                        chainName = 'Binance';
+                        // address.binance = someAddress;
+                    } else if(res === 137) {
+                        chainName = 'Polygon';
+                        // address.polygon = someAddress;
+                    } else if(res === 43114) {
+                        chainName = 'Avalanche';
+                        // address.polygon = someAddress;
+                    } else if(res === 1666600000) {
+                        chainName = 'Harmony';
+                        // address.polygon = someAddress;
+                    } else if(res === 250) {// not correct
+                        chainName = 'Fantom';
+                        // address.fantom = someAddress;
+                    } else if(res === 42220) {// not correct
+                        chainName = 'Celo';
+                        // address.fantom = someAddress;
+                    } else {
+                        console.log('res not identified: ' + res);
+                        console.log(typeof res);
+                        chainName = res;
+                        // address.otherEVM = someAddress;
+                    }
+                    console.log(res);
+                    update.text(chainName, ('wc-' + string + '-2'))
+                })
+            })
+            .then(()=> {
+                wc.provider.disconnect();
+                wc.hide.app();
+            })
+
+        } catch (switchError) {
+            console.log(string + ' wallet Connect error');
+            console.log(switchError.code);
+            console.log(switchError);
+            wc.hide.app();
+        }
+
+    })
+
+}
+
+wc.buttonList.forEach(wc.generate.browserButton.qrOnly);
+
+wc.generate.browserButton.qrAndDesktop = (string) => {
+
+    var buttonDivString = '#button-wc-' + string;
+
+    $(buttonDivString).click(async function() {
+
+        console.log(string + ' button');
+
+        wc.provider = new WalletConnectProvider.default({
+            rpc: {
+                1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+                56: "https://bsc-dataseed.binance.org/",
+                137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+                43114: "https://api.avax.network/ext/bc/C/rpc",
+                1666600000: "https://api.harmony.one",
+            },
+            bridge: 'https://bridge.walletconnect.org',
+        });
+
+        try {
+
+            // wc.reformat.onlyQR();
+
+            await wc.provider
+            .enable()
+            .then((address)=>{
+                update.text(address, ('wc-' + string + '-1'));
+                wc.web3 = new Web3(wc.provider);
+                wc.web3.eth.getChainId()
+                .then((res)=>{
+
+                    if(res === 1) {
+                        chainName = 'Ethereum';
+                        address.eth = someAddress;
+                    } else if(res === 56) {
+                        chainName = 'Binance';
+                        address.binance = someAddress;
+                    } else if(res === 137) {
+                        chainName = 'Polygon';
+                        address.polygon = someAddress;
+                    } else if(res === '0xfa') {
+                        chainName = 'Fantom';
+                        address.fantom = someAddress;
+                    } else {
+                        chainName = res;
+                        address.otherEVM = someAddress;
+                    }
+                    console.log(res);
+                    update.text(res, ('wc-' + string + '-2'))
+                })
+            })
+            .then(()=> {
+                wc.provider.disconnect();
+            })
+
+        } catch (switchError) {
+            console.log(string + ' wallet Connect error');
+            console.log(switchError.code);
+            console.log(switchError);
+        }
+
+    })
+
+}
+wc.generate.browserButton.qrAndDesktop('desktop');
+
+// $('#button-wc-rainbow').click(async function() {
+//
+//     wc.provider = new WalletConnectProvider.default({
+//         rpc: {
+//             1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+//             56: "https://bsc-dataseed.binance.org/",
+//             137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+//             43114: "https://api.avax.network/ext/bc/C/rpc",
+//             1666600000: "https://api.harmony.one",
+//         },
+//         bridge: 'https://bridge.walletconnect.org',
+//     });
+//
+//
+//     console.log('inside wc.connect');
+//
+//     try {
+//
+//         wc.reformat.onlyQR();
+//
+//         await wc.provider
+//         .enable()
+//         .then((address)=>{
+//             update.text(address, 'wc-rainbow-1');
+//             wc.web3 = new Web3(wc.provider);
+//             wc.web3.eth.getChainId()
+//             .then((res)=>{
+//
+//                 if(res === 1) {
+//                     chainName = 'Ethereum';
+//                     address.eth = someAddress;
+//                 } else if(res === 56) {
+//                     chainName = 'Binance';
+//                     address.binance = someAddress;
+//                 } else if(res === 137) {
+//                     chainName = 'Polygon';
+//                     address.polygon = someAddress;
+//                 } else if(res === '0xfa') {
+//                     chainName = 'Fantom';
+//                     address.fantom = someAddress;
+//                 } else {
+//                     chainName = res;
+//                     address.otherEVM = someAddress;
+//                 }
+//                 console.log(res);
+//                 update.text(res, 'wc-rainbow-2')
+//             })
+//         })
+//         .then(()=> {
+//             wc.provider.disconnect();
+//         })
+//
+//     } catch (switchError) {
+//         console.log('rainbow wallet Connect error');
+//         console.log(switchError.code);
+//         console.log(switchError);
+//     }
+//
+// })
 
 // NOT SURE TO KEEP IT
 

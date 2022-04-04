@@ -33,7 +33,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         W.init({ waitScreen: false });
 
 
-
         // POLKADOT
         node.on('html-window', function() {
 
