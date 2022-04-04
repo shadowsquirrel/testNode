@@ -149,7 +149,7 @@ var wallet = {
         clover: {
             dot: undefined,
             sol: undefined,
-            tron: undefined,
+            eth: undefined,
             kda: undefined,
         },
     },
@@ -164,6 +164,7 @@ var wallet = {
             isMetaMask: false,
             isCoinBase: false,
             isXdefi: false,
+            isClover: false,
             multipleProviders: false,
             singleProvider: false,
         },
@@ -261,13 +262,13 @@ var wallet = {
 
         // clover wallet
         isClover: {
+            eth: false,
             dot: false,
             sol: false,
-            tron: false,
             kda: false,
             any: function() {
                 var x = wallet.check.isClover;
-                return (x.dot || x.sol || x.tron || x.kda);
+                return (x.eth || x.dot || x.sol || x.kda);
             },
         }
 
@@ -383,6 +384,12 @@ wallet.checkAll = () => {
 
             }
 
+            if((window.ethereum.providers.find((provider) => provider.isClover) != undefined)) {
+
+                wallet.check.eth.isClover = true;
+
+            }
+
         }
 
     }
@@ -482,6 +489,25 @@ wallet.checkAll = () => {
 
 
 
+    // CLOVER WALLET DETECTION
+    //
+    // eth, sol, kda
+    //
+    // dot detection is already done above
+    //
+    // eth detection for multiple providers is done under check.eth.isClover
+    if(win.clover != undefined) {
+        wallet.check.isClover.eth = true;
+    }
+
+    if(win.clover_solana != undefined) {
+        wallet.check.isClover.sol = true;
+    }
+
+    if(win.clover_kadena != undefined) {
+        wallet.check.isClover.kda = true;
+    }
+
     // MATH WALLET DETECTION
     //
     // solana, polkadot, tron, bitcoin and eth already being accounted for
@@ -557,9 +583,11 @@ wallet.checkAll = () => {
 
     // KARDIACHAIN
     // if coin98 is not active / conflicting
-    if(!win.kardiachain.isCoin98) {
-        if(win.kardiachain.isKaiWallet) {
-            wallet.check.kardia.isKardia = true;
+    if(win.kardiachain != undefined) {
+        if(!win.kardiachain.isCoin98) {
+            if(win.kardiachain.isKaiWallet) {
+                wallet.check.kardia.isKardia = true;
+            }
         }
     }
 
@@ -617,12 +645,6 @@ wallet.report = () => {
         detected += '<br> eth - Coinbase';
     } else {
         undetected += '<br> eth - Coinbase';
-    }
-
-    if(check.isClover.any()) {
-        detected += '<br> dot/eth - Clover';
-    } else {
-        undetected += '<br> dot/eth - Clover ';
     }
 
     if(check.dot.isPolkadotJs) {
@@ -731,16 +753,22 @@ wallet.report = () => {
 
     // multi
 
-    if(check.isMathWallet.any()) {
-        detected += '<br> multi - Math';
+    if(check.isClover.any()) {
+        detected += '<br> dot/eth/kda/sol - Clover';
     } else {
-        undetected += '<br> multi - Math';
+        undetected += '<br> dot/eth/kda/sol - Clover ';
+    }
+
+    if(check.isMathWallet.any()) {
+        detected += '<br> eth/atom/avax/tron/fantom/bsc/sol/btc - Math';
+    } else {
+        undetected += '<br> eth/atom/avax/tron/fantom/bsc/sol/btc - Math';
     }
 
     if(check.isCoin98.any()) {
-        detected += '<br> multi - Coin98';
+        detected += '<br> eth/atom/kardia/avax/fantom/sol - Coin98';
     } else {
-        undetected += '<br> multi - Coin98';
+        undetected += '<br> eth/atom/kardia/avax/fantom/sol - Coin98';
     }
 
 
@@ -947,13 +975,17 @@ $('#main-connect').click(function() {
 // $('#main-test').click(async function() {
 //
 //
-//     await win.xfi.ethereum
-//     .request({
-//         method: 'eth_requestAccounts'
+//     await window.clover_solana
+//     .getAccount()
+//     .then((account)=>{
+//
+//         console.log('clover sol address');
+//         console.log(account);
+//         update.text(account, 'cl-5');
+//         update.text('Solana', 'cl-6')
+//
 //     })
-//     .then((accounts) => {
-//         console.log(accounts);
-//     })
+//
 // })
 
 
@@ -1485,7 +1517,134 @@ $('#button-kardia').click(async function() {
 
 // --- MULTI CHAIN --- //
 
-// BINANCE CHAIN - multi EVM chain wallet
+// CLOVER WALLET
+$('#button-cl').click(async function() {
+
+    var isClover = wallet.check.isClover;
+    var address = wallet.address.clover;
+
+    // ETHEREUM
+    if(isClover.eth) {
+
+        if(wallet.check.eth.multipleProviders) {
+            cloverProvider = window.ethereum.providers.find((provider) => provider.isClover);
+        }
+
+        if(wallet.check.eth.singleProvider) {
+            cloverProvider = window.ethereum;
+        }
+
+        try {
+
+            await cloverProvider
+            .request({
+                method: 'eth_requestAccounts',
+            })
+            .then((accounts) => {
+                someAddress = accounts[0]
+                update.text(someAddress, 'cl-1');
+            })
+
+            await cloverProvider
+            .request({
+                method: 'eth_chainId',
+            })
+            .then((myChainId) => {
+
+                someChain = myChainId;
+
+                if(someChain === '0x1') {
+                    chainName = 'Ethereum';
+                    address.eth = someAddress;
+                } else if(someChain === '0x38') {
+                    chainName = 'Binance';
+                    address.binance = someAddress;
+                } else if(someChain === '0x89') {
+                    chainName = 'Polygon';
+                    address.polygon = someAddress;
+                } else if(someChain === '0xfa') {
+                    chainName = 'Fantom';
+                    address.fantom = someAddress;
+                } else {
+                    chainName = someChain;
+                    address.otherEVM = someAddress;
+                }
+
+                update.text(chainName, 'cl-2');
+
+            })
+
+        } catch (e) {
+            console.log('clover wallet - eth - error: ' + e);
+        }
+
+    }
+
+    // POLKADOT
+    if(isClover.dot) {
+        try {
+
+            win.injectedWeb3.clover
+            .enable()
+            .then((res) => {
+                someProvider = res.accounts.get();
+                return someProvider;
+            })
+            .then((res) => {
+
+                someAddress = res[0].address;
+                address.dot = someAddress;
+                update.text(address.dot, 'cl-3')
+                update.text('Polkadot', 'cl-4')
+
+            })
+
+        } catch (e) {
+            console.log('Clover wallet polkadot error: ' + e);
+        }
+    }
+
+    // SOLANA
+    if(isClover.sol) {
+
+        try {
+            await window.clover_solana
+            .getAccount()
+            .then((account)=>{
+                address.sol = account;
+                console.log('clover sol address');
+                console.log(account);
+                update.text(account, 'cl-5');
+                update.text('Solana', 'cl-6')
+
+            })
+        } catch (e) {
+            console.log('Clover wallet solana error: ' + e);
+        }
+
+    }
+
+    // KADENA
+    if(isClover.kda) {
+        try {
+            await win.clover_kadena
+            .getAccount()
+            .then((account)=>{
+                address.kda = account;
+                console.log('clover kda address');
+                console.log(account);
+                update.text(account, 'cl-7');
+                update.text('Kadena', 'cl-8')
+
+            })
+        } catch (e) {
+            console.log('Clover wallet kadena error: ' + e);
+        }
+    }
+
+})
+
+// BINANCE WALLET - multi EVM chain wallet
 $('#button-bc').click(async function() {
 
     var address = wallet.address.binance;
@@ -1607,8 +1766,8 @@ $('#button-mw').click(async function() {
         try {
             await window.solana
             .getAccount()
-            .then((address)=>{
-                address.sol = address;
+            .then((account)=>{
+                address.sol = account;
                 update.text(address.sol, 'mw1');
                 update.text('Solana', 'mw2')
 
