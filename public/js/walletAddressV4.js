@@ -2201,8 +2201,8 @@ wc.buttonList = [
     'mathWallet', //app did not work
     // 'crypto', //does not react to the qr code
     'ledger',
-    'coin98' //checked
-    'coinomi'
+    'coin98', //checked
+    'coinomi', //checked
 ]
 
 wc.generate.browserButton.qrOnly = (string) => {
