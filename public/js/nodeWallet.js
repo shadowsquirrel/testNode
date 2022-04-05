@@ -565,7 +565,7 @@ wallet.connect.metamask = async () => {
 wallet.connect.coinbase = async () => {
     console.log('coinbase');
 
-
+    var walletName = 'coinbase';
     var button = document.getElementById('wallet-button-' + walletName);
     wallet.button.show.wait(button)
     wallet.button.textify(button);
