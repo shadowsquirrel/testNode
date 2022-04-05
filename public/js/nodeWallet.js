@@ -569,6 +569,7 @@ wallet.connect.coinbase = async () => {
     var button = document.getElementById('wallet-button-' + walletName);
     wallet.button.show.wait(button)
     wallet.button.textify(button);
+    wallet.button.show.success(button, ['11111111111111111111111111'])
 }
 
 wallet.connect.phantom = async () => {
