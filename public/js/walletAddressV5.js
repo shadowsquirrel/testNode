@@ -972,21 +972,8 @@ $('#main-connect').click(function() {
 
 })
 
-// $('#main-test').click(async function() {
-//
-//
-//     await window.clover_solana
-//     .getAccount()
-//     .then((account)=>{
-//
-//         console.log('clover sol address');
-//         console.log(account);
-//         update.text(account, 'cl-5');
-//         update.text('Solana', 'cl-6')
-//
-//     })
-//
-// })
+
+
 
 
 // AGNOSTIC BITCOIN WALLET
@@ -1102,6 +1089,8 @@ $('#button-xdf').click(async function() {
 
 })
 
+
+
 // --- SOLANA --- //
 
 // SOLFLARE - CHECK IF THE ADDRESS IS IN AN ARRAY OR JUST A STRING
@@ -1189,33 +1178,6 @@ $('#button-kp').click(async function() {
     }
 
 })
-
-// TERRA STATION -> UNSTABLE API AND POOR DOCUMENTATION
-// $('#button-ts').click(async function() {
-//
-//     try {
-//
-//         var chainId = "cosmoshub-4";
-//
-//         await window.keplr.enable(chainId);
-//
-//         var offlineSigner = window.keplr.getOfflineSigner(chainId);
-//
-//         await offlineSigner
-//         .getAccounts()
-//         .then((accounts)=>{
-//             console.log(accounts);
-//             wallet.address.cosmos.keplr = accounts.map(i => i.address)
-//             console.log(accounts[0].address);
-//             console.log(wallet.address.cosmos.keplr);
-//             update.text(wallet.address.cosmos.keplr, 'ts');
-//         });
-//
-//     } catch (e) {
-//         console.log('Keplr error: ' + e);
-//     }
-//
-// })
 
 
 
@@ -1497,23 +1459,6 @@ $('#button-kardia').click(async function() {
 
 })
 
-// --- INTERNET COMPUTER --- //
-
-// PLUG
-// $('#button-plug').click(async function() {
-//
-//     try {
-//
-//         await win.ic.plug.requestConnect()
-//         .then((res)=> {
-//             console.log(res);
-//         })
-//
-//     } catch (e) {
-//         console.log('plug wallet error: ' + e);
-//     }
-//
-// })
 
 // --- MULTI CHAIN --- //
 
@@ -2144,6 +2089,18 @@ $('#button-wc-rainbow').click(async function() {
             1666600000: "https://api.harmony.one",
         },
         bridge: 'https://bridge.walletconnect.org',
+        qrcodeModalOptions: {
+            mobileLinks: [
+                "trust",
+                "rainbow",
+                "metamask",
+                "argent",
+                "imtoken",
+                "pillar",
+                "coinomi"
+                "coin98",
+            ],
+        },
     });
 
 
@@ -2224,6 +2181,18 @@ wc.generate.browserButton.qrOnly = (string) => {
                 1666600000: "https://api.harmony.one",
             },
             bridge: 'https://bridge.walletconnect.org',
+            qrcodeModalOptions: {
+                mobileLinks: [
+                    "trust",
+                    "rainbow",
+                    "metamask",
+                    "argent",
+                    "imtoken",
+                    "pillar",
+                    "coinomi"
+                    "coin98",
+                ],
+            },
         });
 
         try {
@@ -2356,67 +2325,7 @@ wc.generate.browserButton.qrAndDesktop = (string) => {
 }
 wc.generate.browserButton.qrAndDesktop('desktop');
 
-// $('#button-wc-rainbow').click(async function() {
-//
-//     wc.provider = new WalletConnectProvider.default({
-//         rpc: {
-//             1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
-//             56: "https://bsc-dataseed.binance.org/",
-//             137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
-//             43114: "https://api.avax.network/ext/bc/C/rpc",
-//             1666600000: "https://api.harmony.one",
-//         },
-//         bridge: 'https://bridge.walletconnect.org',
-//     });
-//
-//
-//     console.log('inside wc.connect');
-//
-//     try {
-//
-//         wc.reformat.onlyQR();
-//
-//         await wc.provider
-//         .enable()
-//         .then((address)=>{
-//             update.text(address, 'wc-rainbow-1');
-//             wc.web3 = new Web3(wc.provider);
-//             wc.web3.eth.getChainId()
-//             .then((res)=>{
-//
-//                 if(res === 1) {
-//                     chainName = 'Ethereum';
-//                     address.eth = someAddress;
-//                 } else if(res === 56) {
-//                     chainName = 'Binance';
-//                     address.binance = someAddress;
-//                 } else if(res === 137) {
-//                     chainName = 'Polygon';
-//                     address.polygon = someAddress;
-//                 } else if(res === '0xfa') {
-//                     chainName = 'Fantom';
-//                     address.fantom = someAddress;
-//                 } else {
-//                     chainName = res;
-//                     address.otherEVM = someAddress;
-//                 }
-//                 console.log(res);
-//                 update.text(res, 'wc-rainbow-2')
-//             })
-//         })
-//         .then(()=> {
-//             wc.provider.disconnect();
-//         })
-//
-//     } catch (switchError) {
-//         console.log('rainbow wallet Connect error');
-//         console.log(switchError.code);
-//         console.log(switchError);
-//     }
-//
-// })
 
-// NOT SURE TO KEEP IT
 
 // TORUS WALLET
 $('#button-13').click(async function() {

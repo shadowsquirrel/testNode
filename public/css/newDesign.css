@@ -1,0 +1,42 @@
+#wallet-information-button-container
+{
+    padding-left: 20%;
+    padding-right: 20%;
+}
+#wallet-button-container
+{
+    display: flex;
+    margin-top: 20px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+#wallet-mobile-button-container
+{
+    display: flex;
+    margin-top: 20px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+.wallet-information-text
+{
+    margin-top:80px;
+}
+.button-extra
+{
+    width:175px;
+    height:auto;
+}
+.wallet-icon
+{
+    height: 30px;
+    width: 30px;
+    border-radius: 30px;
+}
+.wallet-text
+{
+    font-size:20px;
+    font-weight:100;
+    padding-left: 10px;
+}
