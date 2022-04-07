@@ -68,7 +68,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('wallet', {
-        frame: 'walletAddressV4.htm',
+        // frame: 'walletAddressV4.htm',
+        frame: 'newDesign.htm',
         cb: function() {
 
         }
