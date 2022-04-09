@@ -771,12 +771,8 @@ wallet.report = () => {
         undetected += '<br> eth/atom/kardia/avax/fantom/sol - Coin98';
     }
 
-
-
     $('#text-detected').html(detected);
     $('#text-undetected').html(undetected);
-
-
 
 }
 
@@ -1928,54 +1924,56 @@ $('#button-c98').click(async function() {
         console.log('sol to cosmos');
 
         // to get the cosmos chain again check if it is not empty
-        var cosmos = window.coin98.cosmos('cosmos');
+        if(windo.coin98.cosmos != undefined) {
 
-        await cosmos.request({
-            method: 'cosmos_accounts'
-        })
-        .then((accounts) => {
-            console.log('cosmos');
-            console.log(accounts);
-            if(accounts.length === 0) {
+            var cosmos = window.coin98.cosmos('cosmos');
 
-            } else {
-                update.text(accounts, 'c98-5');
-                update.text('Cosmos', 'c98-6');
-            }
+            await cosmos.request({
+                method: 'cosmos_accounts'
+            })
+            .then((accounts) => {
+                console.log('cosmos');
+                console.log(accounts);
+                if(accounts.length === 0) {
+                    console.log('no cosmos address available for coin98');
+                } else {
+                    update.text(accounts, 'c98-5');
+                    update.text('Cosmos', 'c98-6');
+                }
 
-        })
+            })
 
-        console.log('cosmos to terra');
+            console.log('cosmos to terra');
 
-        var terra = window.coin98.cosmos('terra');
+            var terra = window.coin98.cosmos('terra');
 
-        // await terra.request({
-        //     method: 'cosmos_accounts'
-        // })
-        // .then((accounts)) => {
-        //     console.log('terra');
-        //     console.log(accounts);
-        // }
+            // await terra.request({
+            //     method: 'cosmos_accounts'
+            // })
+            // .then((accounts)) => {
+            //     console.log('terra');
+            //     console.log(accounts);
+            // }
 
-        await terra.request({
-            method: 'cosmos_accounts'
-        })
-        .then((accounts) => {
-            console.log('terra');
-            console.log(accounts);
-            if(accounts.length === 0) {
+            await terra.request({
+                method: 'cosmos_accounts'
+            })
+            .then((accounts) => {
+                console.log('terra');
+                console.log(accounts);
+                if(accounts.length === 0) {
+                    console.log('no terra address available for coin98');
+                } else {
+                    update.text(accounts, 'c98-7');
+                    update.text('Terra', 'c98-8');
+                }
 
-            } else {
-                update.text(accounts, 'c98-7');
-                update.text('Terra', 'c98-8');
-            }
+            })
+        } catch (e) {
+            console.log('coin98 wallet error: ' + e);
+        }
 
-        })
-    } catch (e) {
-        console.log('coin98 wallet error: ' + e);
     }
-
-
 
 })
 

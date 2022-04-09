@@ -11,6 +11,7 @@
     background: transparent !important;
     border: 0 !important;
     color: black !important;
+    filter:
 }
 </style>
 
@@ -55,6 +56,19 @@
 
 
     <div id="wallet-information-button-container-desktop">
+
+        <div id="wallet-alert-container">
+
+            <div id="wallet-alert-background"></div>
+
+            <div id="wallet-alert-text">
+                Please first login to your <span id=alertWalletName></span> wallet
+                <br />
+                <br />
+                Then try to connect your wallet again.
+            </div>
+
+        </div>
 
         <div id="wallet-walletConnect-buttonList-container">
 
@@ -128,6 +142,14 @@
 
                         <hr />
 
+                        <div class='wallet-walletConnect-text-2'>
+                            For desktop & other mobile wallets
+                        </div>
+
+                        <div id="wallet-mobile-button-extra" style='display:flex; flex-direction: column-reverse; align-items: center;'>
+
+                        </div>
+
                         <button id="wallet-mobile-button-other" class="btn btn-lg btn-dark button-extra-4">
 
                             <span id="wallet-mobile-icon-other">
@@ -137,9 +159,7 @@
 
                         </button>
 
-                        <div class='wallet-walletConnect-text-2'>
-                            For desktop & other mobile wallets
-                        </div>
+
 
                     </div>
 
@@ -190,7 +210,26 @@
 
     </div>
 
+    <div id="wallet-information-button-container-mobile">
 
+        <div class="wallet-information-text-mobile">
+            Mobile
+        </div>
+
+        <div id="wallet-walletConnect-button-container-mobile">
+
+            <button id="wallet-button-walletConnect-mobile" class="btn btn-lg btn-dark button-extra-mobile">
+
+                <span id="wallet-icon-walletConnect-mobile">
+                    <img src="images/walletIcons/walletConnect.png" class="wallet-icon-mobile" />
+                </span>
+                <span id="wallet-text-walletConnect-mobile" class="wallet-text-mobile">Wallet Connect</span>
+
+            </button>
+
+        </div>
+
+    </div>
 
 
     <script src="js/nodeWallet.js" charset="utf-8"></script>

@@ -58,6 +58,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             } else {
                 console.log(msg)
                 // User rejected the request.
+                node.emit('client-slope-error', msg)
             }
 
         })

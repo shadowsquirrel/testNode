@@ -1,7 +1,9 @@
 var node = parent.node;
 
 var wallet = {
-
+    mobileConnect: undefined,
+    mobileButton: undefined,
+    NoDetectedExtensionWallets: undefined,
     connect: {
         mobile: {
             fromDesktop: undefined,
@@ -36,15 +38,29 @@ var wallet = {
         detected: new Set(), // [<string>, ...]
         connected: new Set(), // [{type:<string>, name:<string>, chain:<string>, address:<string>}, ...]
         // for mobile buttons we use a predefined list
-        mobile: [
-            'metamask',
-            'argent',
-            'rainbow',
-            'trust',
-            'coinomi',
-            'coin98',
-            'other'
-        ],
+        mobile: {
+            allWallets: [
+                'metamask',
+                'argent',
+                'rainbow',
+                'trust',
+                'coinomi',
+                'coin98',
+                'other'
+            ],
+            predefinedWallets: [
+                'metamask',
+                'argent',
+                'rainbow',
+                'trust',
+                'coinomi',
+                'coin98',
+                // additional list for desktop extension wallets
+                'tronlink',
+                'math'
+            ],
+            connected: [],
+        },
     },
     change: {
         buttonText: undefined,
@@ -53,6 +69,15 @@ var wallet = {
         showListContainer: undefined,
         hideListContainer: undefined,
         showQrCode: undefined,
+        other:{
+            generateNewButton: undefined,
+            newButtonCounter: 0,
+        }
+    },
+    alert: {
+        show: undefined,
+        hide: undefined,
+        background: undefined,
     },
 
     // -- CHECK WALLET OBJECT -- //
@@ -148,9 +173,11 @@ var wallet = {
             kardia: false,
             avax: false,
             fantom: false,
+            cosmos: false,
+            terra: false,
             any: function() {
                 var x = wallet.check.isCoin98;
-                return (x.eth || x.sol || x.binance || x.ronin || x.kardia || x.avax || x.fantom);
+                return (x.eth || x.sol || x.binance || x.ronin || x.kardia || x.avax || x.fantom || x.cosmos || x.terra);
             },
         },
 
@@ -180,6 +207,10 @@ var wallet = {
         },
         // TO DO: need to defined the type for other cases
         getButtonFromString: (string, type) => {
+
+            if(type === undefined) {
+                console.log('Warning! getButtonfromString -> type is not defined!');
+            }
 
             var button;
 
@@ -233,31 +264,39 @@ var wallet = {
         // for detecting chain name of EVM networks
         convertChainIDtoName: (id) => {
 
+            console.log('chain id received: ' + id);
+
             if(id === '0x1' || id === '1') {
                 chainName = 'Ethereum';
             } else if(id === '0x38' || id === '56') {
                 chainName = 'Binance';
             } else if(id === '0x89' || id === '137') {
                 chainName = 'Polygon';
-            } else if(id === '0xfa' || id === '250') {
+            } else if(id === '0xFA' || id === '0xfa' || id === '250') {
                 chainName = 'Fantom';
-            } else if (id === '0xA86A' || id === '43114') {
+            } else if (id === '' || id === '0xa86a' || id === '43114') {
                 chainName = 'Avalanche'
-            } else if (id === '0xA4B1' || id === '42161') {
+            } else if (id === '0xA4B1' || id === '0xa4b1' || id === '42161') {
                 chainName = 'Arbitrum'
             } else if (id === '0x19' || id === '25') {
                 chainName = 'Chronos'
-            }  else if (id === '0x63564C40' || id === '1666600000') {
+            }  else if (id === '0x63564C40' || id === '0x63564c40' || id === '1666600000') {
                 chainName = 'Harmony'
-            }  else if (id === '0x6A' || id === '106') {
+            }  else if (id === '0x6A' || id === '0x6a' || id === '106') {
                 chainName = 'Velas'
             }  else if (id === '0x80' || id === '128') {
                 chainName = 'HECO' // huabi eco
-            } else if (id === '0xA4EC' || id === '42220') {
+            } else if (id === '0xA4EC' || id === '0xa4ec' || id === '42220') {
                 chainName = 'Celo'
+            } else if (id === '0x3B' || id === '0x3b' || id === '59') {
+                chainName = 'EOS'
+            } else if (id === '0x7E4' || id === '0x7e4' || id === '2020') {
+                chainName = 'Ronin'
             } else {
                 chainName = id;
             }
+
+            console.log('chain name identified: ' + chainName);
 
             return chainName;
 
@@ -281,7 +320,16 @@ wallet.button.show.success = (button, accounts, isMobile) => {
 
     var n, textDiv, emojiDiv;
 
+    console.log('');
+    console.log('-----');
+    console.log('button.show.success');
+    // console.log(button);
+
     textDiv = button.children[1];
+
+    // console.log('text div');
+    // console.log(textDiv);
+
 
     // convert string account to array
     if(typeof(accounts) === 'string') {
@@ -290,18 +338,23 @@ wallet.button.show.success = (button, accounts, isMobile) => {
 
     n = accounts.length;
 
+
     // need to account for the delayed animation command we have in the wait callback
     // this is for an edge case where the participant already registered its wallet
     // which may happen if refreshed the page after connecting some wallets
     setTimeout(()=>{
 
-        textDiv.innerHTML = '✔ ...' + accounts[0].slice(-4);
+        console.log('');
+        console.log('accounts');
+        console.log(accounts);
+        console.log('----');
+        console.log('');
 
-        console.log(accounts[0]);
+        textDiv.innerHTML = '✔ ...' + accounts[0].slice(-4);
 
         if (n > 1) textDiv.innerText += ' (+' + n + ')';
 
-    }, 200)
+    }, 500)
 
 
     if(isMobile) {
@@ -336,6 +389,13 @@ wallet.button.show.failure = (button) => {
 
 }
 
+wallet.button.show.noWalletDetected = (button) => {
+
+    button.children[1].innerHTML = 'No extension wallet is detected 😕';
+    button.style.width = '100%';
+
+}
+
 wallet.button.textify = (button) => {
 
     button.disabled = true;
@@ -345,13 +405,52 @@ wallet.button.textify = (button) => {
 
 wallet.button.buttonify = (button, name) => {
 
+    var text;
+
     button.classList.remove('texify');
     button.disabled = false;
-    button.children[1].innerHTML = wallet.help.capitalizeFirstLetter(name);
+    button.children[0].style.filter = 'grayscale(0)';
+
+    if(!wallet.list.mobile.predefinedWallets.includes(name)) {
+        text = 'Other';
+    } else {
+        text = wallet.help.capitalizeFirstLetter(name);
+    }
+
+    console.log('buttonify text: ' + text);
+    button.children[1].style.transition = '0.05s';
+    button.children[1].style.opacity = 0;
+    setTimeout(()=>{
+        button.children[1].innerHTML = text;
+        button.children[1].style.opacity = 1;
+    }, 200)
+
 
 }
 
+// --- ALERT SCREEN SETUP --- //
+wallet.alert.show = (name) => {
 
+    name = name === undefined ? 'Unknown' : name;
+
+    var div = document.getElementById('wallet-alert-container');
+    div.style.display = 'flex';
+
+    var divName = document.getElementById('alertWalletName');
+    divName.innerHTML = name;
+
+}
+
+wallet.alert.hide = () => {
+
+    var div = document.getElementById('wallet-alert-container');
+    div.style.display = 'none';
+
+}
+
+wallet.alert.background = document.getElementById('wallet-alert-background');
+
+wallet.alert.background.onclick = wallet.alert.hide;
 
 // --- BUTTON DIV CREATION & ACTIVATION --- //
 
@@ -605,7 +704,7 @@ wallet.detectWallets = () => {
 
     // COIN98 WALLET DETECTIONS
     //
-    // solana
+    // solana, kardia, cosmos, terra
     //
     // note: we are checking for eth wallet on the eth section above
     //
@@ -625,17 +724,38 @@ wallet.detectWallets = () => {
         }
 
         // solana
-        window.coin98.sol.request({ method: 'has_wallet', params: ['solana'] }).then(() => {
+        window.coin98.sol.request({ method: 'has_wallet', params: ['solana'] })
+        .then(() => {
+
             wallet.check.isCoin98.sol = true;
             console.log('coin98 sol wallet exists');
+            // updates the already register detection results
+            wallet.registerDetectionResults();
 
-            wallet.report();
-            wallet.button.showActive();
+            // check if the button is already generated
+            var button = wallet.help.getButtonFromString('coin98', 'extension');
+            if(button === undefined) {
+                console.log('isCoin98 button becomes active after the fact and the buttons is being created slightly later');
+                wallet.button.inject('coin98');
+                wallet.button.activate('coin98');
+            }
 
         }).catch(e => {
             wallet.check.isCoin98.sol = false;
             console.log('coin98 sol wallet does not exist');
+            console.log('error we receive: ');
+            console.log(e);
         })
+
+        // cosmos & terra
+        if(window.coin98.cosmos != undefined) {
+            if(window.coin98.cosmos('cosmos') != undefined) {
+                wallet.check.isCoin98.cosmos = true;
+            }
+            if(window.coin98.cosmos('terra') != undefined) {
+                wallet.check.isCoin98.terra = true;
+            }
+        }
 
     }
 
@@ -924,15 +1044,37 @@ wallet.button.detect.onclick = () => {
     wallet.detectWallets();
     wallet.registerDetectionResults();
 
-    wallet.list.detected.forEach(wallet.button.inject);
-    wallet.list.detected.forEach(wallet.button.activate);
+    if(wallet.list.detected.size > 0) {
 
-    document.getElementById('wallet-button-detect').style.display = 'none';
+        wallet.list.detected.forEach(wallet.button.inject);
+        wallet.list.detected.forEach(wallet.button.activate);
+
+        wallet.NoDetectedExtensionWallets = wallet.list.detected.length;
+
+        document.getElementById('wallet-button-detect').style.display = 'none';
+
+    } else {
+
+        console.log('No extension wallets are detected');
+
+        var button = document.getElementById('wallet-button-detect');
+        wallet.button.textify(button);
+        wallet.button.show.noWalletDetected(button);
+        wallet.NoDetectedExtensionWallets = 0;
+
+    }
 
 }
 
 // --- CONNECTION --- //
 
+// BITCOIN
+// bitcoin
+
+
+// EVM
+
+// metamask
 wallet.connect.metamask = async () => {
 
     var button = wallet.help.getButtonFromString('metamask', 'extension');
@@ -950,11 +1092,11 @@ wallet.connect.metamask = async () => {
     var myProvider;
 
     if(wallet.check.eth.multipleProviders) {
-        myProvider = win.ethereum.providers.find((provider) => provider.isMetaMask);
+        myProvider = window.ethereum.providers.find((provider) => provider.isMetaMask);
     }
 
     if(wallet.check.eth.singleProvider) {
-        myProvider = win.ethereum;
+        myProvider = window.ethereum;
     }
 
 
@@ -993,67 +1135,176 @@ wallet.connect.metamask = async () => {
 
 }
 
+// coinbase
 wallet.connect.coinbase = async () => {
 
 
-        var button = wallet.help.getButtonFromString('coinbase', 'extension');
-        wallet.button.show.wait(button)
+    var button = wallet.help.getButtonFromString('coinbase', 'extension');
+    wallet.button.show.wait(button)
 
-        var myWallet = {
-            address: [],
-            chain: undefined,
-            type: 'extension',
-            name: 'coinbase'
-        }
+    var myWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'coinbase'
+    }
 
-        //--//
+    //--//
 
-        var myProvider;
+    var myProvider;
 
-        if(wallet.check.eth.multipleProviders) {
-            myProvider = win.ethereum.providers.find((provider) => provider.isCoinbaseWallet);
-        }
+    if(wallet.check.eth.multipleProviders) {
+        myProvider = window.ethereum.providers.find((provider) => provider.isCoinbaseWallet);
+    }
 
-        if(wallet.check.eth.singleProvider) {
-            myProvider = win.ethereum.provider;
-        }
+    if(wallet.check.eth.singleProvider) {
+        myProvider = window.ethereum.provider;
+    }
 
 
-        try {
+    try {
 
-            await myProvider
-            .request({ method: 'eth_requestAccounts' })
-            .then((accounts) => {
+        await myProvider
+        .request({ method: 'eth_requestAccounts' })
+        .then((accounts) => {
 
-                wallet.button.show.success(button, accounts);
+            wallet.button.show.success(button, accounts);
 
-                accounts.forEach(i => myWallet.address.push(i));
+            accounts.forEach(i => myWallet.address.push(i));
 
-            })
+        })
 
-            await myProvider
-            .request({
-                method: 'eth_chainId',
-            })
-            .then((myChainId) => {
+        await myProvider
+        .request({
+            method: 'eth_chainId',
+        })
+        .then((myChainId) => {
 
-                myWallet.chain = wallet.help.convertChainIDtoName(myChainId);
+            myWallet.chain = wallet.help.convertChainIDtoName(myChainId);
 
-                wallet.list.connected.add(myWallet);
+            wallet.list.connected.add(myWallet);
 
-                console.log(wallet.list.connected);
+            console.log(wallet.list.connected);
 
-                // TO DO SEND IT TO THE TABLE
+            // TO DO SEND IT TO THE TABLE
 
-            })
+        })
 
-        } catch(e) {
-            console.log('Coinbase error: ' + e);
-            wallet.button.show.failure(button);
-        }
+    } catch(e) {
+        console.log('Coinbase error: ' + e);
+        wallet.button.show.failure(button);
+    }
 
 }
 
+// binance
+wallet.connect.binance = async () => {
+
+    var button = wallet.help.getButtonFromString('binance', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'binance'
+    }
+
+    var myProvider = win.BinanceChain;
+
+    try {
+
+        await myProvider
+        .request({ method: 'eth_requestAccounts' })
+        .then((accounts) => {
+
+            wallet.button.show.success(button, accounts);
+
+            accounts.forEach(i => myWallet.address.push(i));
+
+        })
+
+        await myProvider
+        .request({
+            method: 'eth_chainId',
+        })
+        .then((myChainId) => {
+
+            myWallet.chain = wallet.help.convertChainIDtoName(myChainId);
+
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            // TO DO SEND IT TO THE TABLE
+
+        })
+
+    } catch (e) {
+
+        console.log('Binance wallet error: ' + e);
+        wallet.button.show.failure(button);
+
+    }
+
+}
+
+// xdefi
+wallet.connect.xdefi = async () => {
+
+    var button = wallet.help.getButtonFromString('xdefi', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'xdefi'
+    }
+
+    try {
+
+        var myProvider = win.xfi.ethereum;
+
+        await myProvider
+        .request({
+            method: 'eth_requestAccounts'
+        })
+        .then((accounts) => {
+
+            wallet.button.show.success(button, accounts);
+
+            accounts.forEach(i => myWallet.address.push(i));
+
+        })
+
+        await myProvider
+        .request({
+            method: 'eth_chainId',
+        })
+        .then((myChainId) => {
+
+            myWallet.chain = wallet.help.convertChainIDtoName(myChainId);
+
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            // TO DO SEND IT TO THE TABLE
+
+        })
+
+    } catch (e) {
+        console.log('xdefi wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+
+// SOLANA
+
+// phantom
 wallet.connect.phantom = async () => {
 
     var button = wallet.help.getButtonFromString('phantom', 'extension');
@@ -1071,7 +1322,7 @@ wallet.connect.phantom = async () => {
         await win.solana.connect()
         .then((res)=>{
 
-            myWallet.address = win.solana.publicKey.toString();
+            myWallet.address = [win.solana.publicKey.toString()];
             myWallet.chain = 'Solana';
             wallet.list.connected.add(myWallet);
 
@@ -1090,16 +1341,98 @@ wallet.connect.phantom = async () => {
 
 }
 
+// solflare
+wallet.connect.solflare = async () => {
+
+    var button = wallet.help.getButtonFromString('solflare', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'solflare'
+    }
+
+    try {
+
+        var myProvider = window.solflare;
+
+        await myProvider.connect()
+        .then((res)=>{
+
+            myWallet.address = [window.solflare.publicKey.toString()];
+            myWallet.chain = 'Solana';
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, myWallet.address);
+
+            // TO DO SEND IT TO THE TABLE
+
+        })
+
+    } catch (e) {
+        console.log('Solflare error: ' + e);
+        wallet.button.show.failure(button);
+    }
+}
+
+// slope
+var slopeSwitch = true;
+wallet.connect.slope = async () => {
+
+    var button = wallet.help.getButtonFromString('slope', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'slope'
+    }
+
+    node.on('client-slope', function(address) {
+
+        myWallet.address = [address];
+        myWallet.chain = 'Solana';
+        wallet.list.connected.add(myWallet);
+
+        console.log(wallet.list.connected);
+
+        wallet.button.show.success(button, myWallet.address);
+
+        // TO DO SEND IT TO THE TABLE
+
+    })
+
+    node.on('client-slope-error', function(msg) {
+        console.log('Slope wallet error ' + msg);
+        wallet.button.show.failure(button);
+    })
+
+    if(slopeSwitch) {
+        slopeSwitch = false;
+        node.emit('html-slope');
+    }
+
+}
+
+
+// CARDANO
+
+// yoroi
 wallet.connect.yoroi = async () => {
 
-    var myAdaApi, unused, used, accounts;
+    var myAdaApi, unused, used, reward, change, accounts;
 
     var button = wallet.help.getButtonFromString('yoroi', 'extension');
     wallet.button.show.wait(button)
 
     var myWallet = {
         address: [],
-        chain: undefined,
+        chain: 'Cardano',
         type: 'extension',
         name: 'yoroi'
     }
@@ -1111,16 +1444,21 @@ wallet.connect.yoroi = async () => {
             myAdaApi = api;
             return myAdaApi.getUsedAddresses();
         })
-        .then((res) => {
-            used = res;
+        .then((res1) => {
+            used = res1;
             return myAdaApi.getUnusedAddresses();
         })
-        .then((res)=>{
+        .then((res2) => {
+            unused = res2;
+            return myAdaApi.getRewardAddresses();
+        })
+        .then((res3) => {
+            reward = res3;
+            return myAdaApi.getChangeAddress();
+        })
+        .then((res4) => {
 
-
-            unused = unused === undefined ? [] : unused;
-            used = res;
-            accounts = unused;
+            change = res4;
 
             console.log();
             console.log('yoroi:');
@@ -1128,12 +1466,19 @@ wallet.connect.yoroi = async () => {
             console.log(unused);
             console.log('used');
             console.log(used);
+            console.log('reward');
+            console.log(reward);
+            console.log('change');
+            console.log(change);
             console.log();
 
-            used.forEach(i => accounts.push(i));
+            // order: unused, reward, used, change
+            accounts = unused.concat(reward).concat(used).concat(change);
+
+            console.log('accounts');
+            console.log(accounts);
 
             myWallet.address = accounts;
-            myWallet.chain = 'cardano';
 
             wallet.list.connected.add(myWallet);
             console.log(wallet.list.connected);
@@ -1141,8 +1486,6 @@ wallet.connect.yoroi = async () => {
             wallet.button.show.success(button, accounts);
 
             // TO DO SEND IT TO THE TABLE
-
-
         })
     } catch (e) {
         console.log('yoroi wallet error: ' + e);
@@ -1151,6 +1494,274 @@ wallet.connect.yoroi = async () => {
 
 }
 
+// nami
+wallet.connect.nami = async () => {
+
+    var myAdaApi, unused, used, accounts;
+
+    var button = wallet.help.getButtonFromString('nami', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Cardano',
+        type: 'extension',
+        name: 'nami'
+    }
+
+    try {
+        await win.cardano.nami.enable()
+        .then((api) => {
+            myAdaApi = api;
+            return myAdaApi.getUsedAddresses();
+        })
+        .then((res1) => {
+            used = res1;
+            return myAdaApi.getUnusedAddresses();
+        })
+        .then((res2) => {
+            unused = res2;
+            return myAdaApi.getRewardAddresses();
+        })
+        .then((res3) => {
+            reward = res3;
+            return myAdaApi.getChangeAddress();
+        })
+        .then((res4) => {
+
+            change = res4;
+
+            console.log();
+            console.log('nami:');
+            console.log('unused');
+            console.log(unused);
+            console.log('used');
+            console.log(used);
+            console.log('reward');
+            console.log(reward);
+            console.log('change');
+            console.log(change);
+            console.log();
+
+            // order: unused, reward, used, change
+            accounts = unused.concat(reward).concat(used).concat(change);
+
+            console.log('accounts');
+            console.log(accounts);
+
+            myWallet.address = accounts;
+
+            wallet.list.connected.add(myWallet);
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, accounts);
+
+            // TO DO SEND IT TO THE TABLE
+        })
+    } catch (e) {
+        console.log('nami wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+// eternl
+wallet.connect.eternl = async () => {
+
+    var myAdaApi, unused, used, accounts;
+
+    var button = wallet.help.getButtonFromString('eternl', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Cardano',
+        type: 'extension',
+        name: 'eternl'
+    }
+
+    try {
+        await win.cardano.eternl.enable()
+        .then((api) => {
+            myAdaApi = api;
+            return myAdaApi.getUsedAddresses();
+        })
+        .then((res1) => {
+            used = res1;
+            return myAdaApi.getUnusedAddresses();
+        })
+        .then((res2) => {
+            unused = res2;
+            return myAdaApi.getRewardAddresses();
+        })
+        .then((res3) => {
+            reward = res3;
+            return myAdaApi.getChangeAddress();
+        })
+        .then((res4) => {
+
+            change = res4;
+
+            console.log();
+            console.log('eternl:');
+            console.log('unused');
+            console.log(unused);
+            console.log('used');
+            console.log(used);
+            console.log('reward');
+            console.log(reward);
+            console.log('change');
+            console.log(change);
+            console.log();
+
+            // order: unused, reward, used, change
+            accounts = unused.concat(reward).concat(used).concat(change);
+
+            console.log('accounts');
+            console.log(accounts);
+
+            myWallet.address = accounts;
+
+            wallet.list.connected.add(myWallet);
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, accounts);
+
+            // TO DO SEND IT TO THE TABLE
+        })
+    } catch (e) {
+        console.log('eternl wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+// flint
+wallet.connect.flint = async () => {
+
+    var myAdaApi, unused, used, accounts;
+
+    var button = wallet.help.getButtonFromString('flint', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Cardano',
+        type: 'extension',
+        name: 'flint'
+    }
+
+    try {
+        await win.cardano.flint.enable()
+        .then((api) => {
+            myAdaApi = api;
+            return myAdaApi.getUsedAddresses();
+        })
+        .then((res1) => {
+            used = res1;
+            return myAdaApi.getUnusedAddresses();
+        })
+        .then((res2) => {
+            unused = res2;
+            return myAdaApi.getRewardAddresses();
+        })
+        .then((res3) => {
+            reward = res3;
+            return myAdaApi.getChangeAddress();
+        })
+        .then((res4) => {
+
+            change = res4;
+
+            console.log();
+            console.log('flint:');
+            console.log('unused');
+            console.log(unused);
+            console.log('used');
+            console.log(used);
+            console.log('reward');
+            console.log(reward);
+            console.log('change');
+            console.log(change);
+            console.log();
+
+            // order: unused, reward, used, change
+            accounts = unused.concat(reward).concat(used).concat(change);
+
+            console.log('accounts');
+            console.log(accounts);
+
+            myWallet.address = accounts;
+
+            wallet.list.connected.add(myWallet);
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, accounts);
+
+            // TO DO SEND IT TO THE TABLE
+        })
+    } catch (e) {
+        console.log('flint wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+// typhon
+wallet.connect.typhon = async () => {
+
+    var button = wallet.help.getButtonFromString('typhon', 'extension');
+    wallet.button.show.wait(button)
+
+    var address, reward;
+
+    var myWallet = {
+        address: [],
+        chain: 'Cardano',
+        type: 'extension',
+        name: 'typhon'
+    }
+
+    try {
+
+        await win.cardano.typhon.enable()
+        .then(() => {
+            return win.cardano.typhon.getAddress();
+        })
+        .then((res1) => {
+            address = [res1.data];
+            return win.cardano.typhon.getRewardAddress();
+        })
+        .then((res2) => {
+            reward = [res2.data];
+
+            console.log('typhon');
+            console.log('address');
+            console.log(address);
+            console.log('reward');
+            console.log(reward);
+
+            myWallet.address = address.concat(reward);
+
+            wallet.list.connected.add(myWallet);
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, myWallet.address);
+
+            // TO DO SEND IT TO THE TABLE
+
+        })
+    } catch (e) {
+        console.log('typhon wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+
+// POLKADOT
+
+// dot-js
 wallet.connect.polkadot = async () => {
 
     var button = wallet.help.getButtonFromString('polkadot', 'extension');
@@ -1173,9 +1784,11 @@ wallet.connect.polkadot = async () => {
         })
         .then((res)=>{
 
-            myWallet.address = res[0].address;
+            myWallet.address = [res[0].address];
             myWallet.chain = 'Polkadot';
             wallet.button.show.success(button, myWallet.address);
+
+            wallet.list.connected.add(myWallet);
 
             console.log(wallet.list.connected);
 
@@ -1192,6 +1805,870 @@ wallet.connect.polkadot = async () => {
 }
 
 
+// COSMOS
+
+// keplr
+wallet.connect.keplr = async () => {
+
+    var button = wallet.help.getButtonFromString('keplr', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Cosmos',
+        type: 'extension',
+        name: 'keplr'
+    }
+
+    try {
+
+        var chainId = "cosmoshub-4";
+
+        await window.keplr.enable(chainId);
+
+        var offlineSigner = window.keplr.getOfflineSigner(chainId);
+
+        await offlineSigner
+        .getAccounts()
+        .then((accounts)=>{
+
+            myWallet.address = accounts.map(i => i.address);
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, myWallet.address);
+
+            // TO DO SEND IT TO THE TABLE
+
+        });
+
+    } catch (e) {
+        console.log('Keplr error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+
+// TRON
+
+// tronlink
+wallet.connect.tronlink = async () => {
+
+    var button = wallet.help.getButtonFromString('tronlink', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Tron',
+        type: 'extension',
+        name: 'tronlink'
+    }
+
+    try {
+        win.tronLink.request({
+            method:'tron_requestAccounts'
+        })
+        .then((res)=>{
+
+            if(!win.tronWeb.defaultAddress.base58) {
+
+                wallet.alert.show('Tronlink');
+                wallet.button.buttonify(button, 'tronlink');
+                return;
+
+            } else {
+
+                console.log(win.tronWeb.defaultAddress.base58);
+                myWallet.address = [win.tronWeb.defaultAddress.base58];
+                wallet.list.connected.add(myWallet);
+
+                console.log(wallet.list.connected);
+
+                wallet.button.show.success(button, myWallet.address);
+
+            }
+
+        })
+    } catch (e) {
+        console.log('Tronlink wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+
+// ALGORAND
+
+// algosigner
+//
+// NOTE: if the wallet owner closes the account login page, we cannot catch that
+// thus no error is returned thus we get stuck in waiting animation forever..
+// though regular reject connection is accounted for as usual
+//
+wallet.connect.algosigner = async () => {
+
+    var button = wallet.help.getButtonFromString('algosigner', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Algorand',
+        type: 'extension',
+        name: 'algosigner'
+    }
+
+    try {
+        await win.AlgoSigner.connect().then((res)=>{
+            return win.AlgoSigner.accounts({ledger:'MainNet'});
+        }).then((res)=>{
+
+            myWallet.address = [res[0].address];
+
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, myWallet.address);
+
+        })
+    } catch (e) {
+        console.log('algosigner wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+
+// MINA
+
+// auro
+//
+// NOTE: if the wallet owner closes the account login page, we cannot catch that
+// thus no error is returned thus we get stuck in waiting animation forever..
+// though regular reject connection is accounted for as usual
+//
+// NOTE: UPON NOT ALLOWING CONNECTION WE ARE UNABLE TO CATCH THE ERROR ALTOUGH
+// WE ARE INSIDE TRY AND CATCH
+//
+wallet.connect.auro = async () => {
+
+    var button = wallet.help.getButtonFromString('auro', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Mina',
+        type: 'extension',
+        name: 'auro'
+    }
+
+    try {
+        window.mina.requestAccounts()
+        .then((accounts) => {
+
+            myWallet.address = accounts;
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, myWallet.address);
+
+        })
+    } catch (e) {
+        console.log('Auro wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+
+// KARDIA
+
+// kardia
+//
+// NOTE: shitty wallet, you don't need to be logged in to be connected as long as you were
+// connected before. No where to find a disconnect from the connected page button
+// continuously injects stupid shit to the browser which leads to its eventual crash
+//
+wallet.connect.kardia = async () => {
+
+    var button = wallet.help.getButtonFromString('kardia', 'extension');
+    wallet.button.show.wait(button)
+
+    var myWallet = {
+        address: [],
+        chain: 'Kardia',
+        type: 'extension',
+        name: 'kardia'
+    }
+
+    try {
+        win.kardiachain.enable().then((accounts) => {
+
+            myWallet.address = accounts;
+            wallet.list.connected.add(myWallet);
+
+            console.log(wallet.list.connected);
+
+            wallet.button.show.success(button, myWallet.address);
+
+
+        })
+    } catch (e) {
+        console.log('kardia wallet error: ' + e);
+        wallet.button.show.failure(button);
+    }
+
+}
+
+// MUTLI CHAIN
+
+// clover
+//
+// NOTE: we are trying to get the address for all possible chains
+// eth, dot, sol and kda. For each we generate a new wallet object
+// at the end we have a list of wallet objects that needs to be used
+// to be passed on to the table
+//
+wallet.help.cloverConnectedToAtLeastOneAddress = false;
+wallet.connect.clover = async () => {
+
+    var button = wallet.help.getButtonFromString('clover', 'extension');
+    wallet.button.show.wait(button)
+
+
+    var wallets = [];
+    var allAddresses = [];
+    var isClover = wallet.check.isClover;
+
+    // ETHEREUM
+    var myEthWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'clover'
+    }
+
+    if(isClover.eth) {
+
+        if(wallet.check.eth.multipleProviders) {
+            cloverProvider = window.ethereum.providers.find((provider) => provider.isClover);
+        }
+
+        if(wallet.check.eth.singleProvider) {
+            cloverProvider = window.ethereum;
+        }
+
+        try {
+
+            await cloverProvider
+            .request({
+                method: 'eth_requestAccounts',
+            })
+            .then((accounts) => {
+
+                allAddresses = allAddresses.concat(accounts);
+                accounts.forEach(i => myEthWallet.address.push(i));
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.cloverConnectedToAtLeastOneAddress = true;
+
+            })
+
+            await cloverProvider
+            .request({
+                method: 'eth_chainId',
+            })
+            .then((myChainId) => {
+
+                myEthWallet.chain = wallet.help.convertChainIDtoName(myChainId);
+                wallet.list.connected.add(myEthWallet);
+                wallets.push(myEthWallet);
+
+            })
+
+        } catch (e) {
+            console.log('clover wallet - eth - error: ' + e);
+            wallet.button.show.failure(button);
+        }
+
+    }
+
+
+    // POLKADOT
+    var myDotWallet = {
+        address: [],
+        chain: 'Polkadot',
+        type: 'extension',
+        name: 'clover'
+    }
+
+    if(isClover.dot) {
+        try {
+
+            win.injectedWeb3.clover
+            .enable()
+            .then((res) => {
+                someProvider = res.accounts.get();
+                return someProvider;
+            })
+            .then((res) => {
+
+                myDotWallet.address = [res[0].address];
+                wallet.list.connected.add(myDotWallet);
+                wallets.push(myDotWallet);
+                allAddresses = allAddresses.concat(myDotWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.cloverConnectedToAtLeastOneAddress = true;
+
+            })
+
+        } catch (e) {
+            console.log('Clover wallet polkadot error: ' + e);
+            if(!wallet.help.cloverConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+
+        }
+    }
+
+
+    // SOLANA
+    var mySolWallet = {
+        address: [],
+        chain: 'Solana',
+        type: 'extension',
+        name: 'clover'
+    }
+
+    if(isClover.sol) {
+
+        try {
+            await window.clover_solana
+            .getAccount()
+            .then((account)=>{
+
+                mySolWallet.address = [account];
+                wallet.list.connected.add(mySolWallet);
+                wallets.push(mySolWallet);
+                allAddresses = allAddresses.concat(mySolWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.cloverConnectedToAtLeastOneAddress = true;
+
+            })
+        } catch (e) {
+            console.log('Clover wallet solana error: ' + e);
+            if(!wallet.help.cloverConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+
+    }
+
+
+    // KADENA
+    var myKDAWallet = {
+        address: [],
+        chain: 'Kadena',
+        type: 'extension',
+        name: 'clover'
+    }
+
+    if(isClover.kda) {
+        try {
+            await win.clover_kadena
+            .getAccount()
+            .then((account)=>{
+
+                myKDAWallet.address = [account];
+                wallet.list.connected.add(myKDAWallet);
+                wallets.push(myKDAWallet);
+                allAddresses = allAddresses.concat(myKDAWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.cloverConnectedToAtLeastOneAddress = true;
+
+            })
+        } catch (e) {
+            console.log('Clover wallet kadena error: ' + e);
+            if(!wallet.help.cloverConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+    }
+
+    console.log(wallets);
+
+}
+
+// math
+//
+// NOTE: unlike clover we can only get the active chain from the math wallet
+// we could have consider genaring a new math button wallet after each connection
+// then hope that the participant changes its active network -> this will result in
+// refreshing of page thus we do not have to worry about it the math button will be
+// refreshed if that is the case
+//
+// I also try to account for not being logged into the wallet. If in 15 seconds,
+// you are logged but you do not connect your wallet then you will receive an alarm
+// as if you are not logged in
+//
+//
+wallet.help.mathConnectedToAtLeastOneAddress = false;
+wallet.connect.math = async () => {
+
+    var button = wallet.help.getButtonFromString('math', 'extension');
+    wallet.button.show.wait(button);
+
+    var wallets = [];
+    var allAddresses = [];
+
+
+
+    var isMath = wallet.check.isMathWallet;
+
+    var someAddress = undefined;
+
+    // for EVM chains other than eth (polygon, binance)
+    var someProvider = undefined;
+    var someChain = undefined;
+    var chainName = undefined;
+
+    // ETHEREUM (eth, binance, polygon)
+    var myEthWallet = {
+        address: [],
+        chain: undefined,
+        type: 'extension',
+        name: 'math'
+    }
+
+    if(isMath.eth) {
+
+        try {
+
+            await window.ethereum
+            .request({
+                method: 'eth_requestAccounts',
+            })
+            .then((accounts) => {
+
+                allAddresses = allAddresses.concat(accounts);
+                accounts.forEach(i => myEthWallet.address.push(i));
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+            })
+
+            await window.ethereum
+            .request({
+                method: 'eth_chainId',
+            })
+            .then((myChainId) => {
+
+                myEthWallet.chain = wallet.help.convertChainIDtoName(myChainId);
+                wallet.list.connected.add(myEthWallet);
+                wallets.push(myEthWallet);
+
+                console.log(wallets);
+                console.log(wallets[0]);
+
+            })
+
+        } catch (e) {
+            console.log('Math wallet EVM error: ' + e);
+            wallet.button.show.failure(button);
+        }
+
+    }
+
+    // SOLANA
+    var mySolWallet = {
+        address: [],
+        chain: 'Solana',
+        type: 'extension',
+        name: 'math'
+    }
+
+    if(isMath.sol) {
+
+        try {
+            await window.solana
+            .getAccount()
+            .then((account)=>{
+
+                mySolWallet.address = [account];
+                wallet.list.connected.add(mySolWallet);
+                wallets.push(mySolWallet);
+                allAddresses = allAddresses.concat(mySolWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+                console.log(wallets);
+                console.log(wallets[0]);
+
+            })
+        } catch (e) {
+            console.log('Math wallet solana error: ' + e);
+            if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+
+    }
+
+    // POLKADOT
+    var myDotWallet = {
+        address: [],
+        chain: 'Polkadot',
+        type: 'extension',
+        name: 'math'
+    }
+
+    if(isMath.dot) {
+
+        try {
+
+            win.injectedWeb3.mathwallet
+            .enable()
+            .then((res) => {
+                someProvider = res.accounts.get();
+                return someProvider;
+            })
+            .then((res) => {
+
+                myDotWallet.address = [res[0].address];
+                wallet.list.connected.add(myDotWallet);
+                wallets.push(myDotWallet);
+                allAddresses = allAddresses.concat(myDotWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+                console.log(wallets);
+                console.log(wallets[0]);
+
+            })
+
+        } catch (e) {
+            console.log('Math wallet polkadot error: ' + e);
+            if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+
+    }
+
+    // TRON
+    var myTronWallet = {
+        address: [],
+        chain: 'Tron',
+        type: 'extension',
+        name: 'math'
+    }
+
+    if(isMath.tron) {
+
+        try {
+            if(tronWeb.defaultAddress != undefined) {
+
+                myTronWallet.address = [win.tronWeb.defaultAddress.base58];
+                wallet.list.connected.add(myTronWallet);
+                wallets.push(myTronWallet);
+                allAddresses = allAddresses.concat(myTronWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+                console.log(wallets);
+                console.log(wallets[0]);
+
+            } else {
+                console.log('tron address for math wallet does not exist');
+            }
+
+        } catch (e) {
+            console.log('Math wallet tron error: ' + e);
+            if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+
+    }
+
+    // COSMOS -> shitty api we ignore...
+
+    // FANTOM -> eth method covers it
+
+    // BTC -> accounted for by a differetn bitcoin specific button
+
+    setTimeout(()=>{
+        if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+            wallet.alert.show('Math');
+            setTimeout(()=>{
+                if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                    wallet.button.buttonify(button, 'math');
+                }
+            }, 5000)
+        }
+    }, 10000)
+
+
+
+
+}
+
+// coin98
+//
+wallet.connect.coin98 = async () => {
+
+    var button = wallet.help.getButtonFromString('coin98', 'extension');
+    wallet.button.show.wait(button);
+
+    var isCoin98 = wallet.check.isCoin98;
+
+    var wallets = [];
+    var allAddresses = [];
+
+    // ETHEREUM (eth, binance, polygon)
+
+    var myEthWallet = {
+        chain: undefined,
+        address: [],
+        type: 'extension',
+        name: 'coin98'
+    }
+
+    if(isCoin98.eth) {
+
+        console.log('evm action');
+
+        try {
+            await window.ethereum
+            .request({ method: 'eth_requestAccounts' })
+            .then((accounts) => {
+
+                if(accounts.length === 0) {
+
+                    console.log('there are no evm addresses for coin98');
+
+                } else {
+
+                    allAddresses = allAddresses.concat(accounts);
+                    accounts.forEach(i => myEthWallet.address.push(i));
+                    wallet.button.show.success(button, allAddresses);
+                    // wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+                }
+
+            })
+
+            await window.ethereum
+            .request({
+                method: 'eth_chainId',
+            })
+            .then((myChainId) => {
+
+                if(myEthWallet.address.length != 0) {
+
+                    myEthWallet.chain = wallet.help.convertChainIDtoName(myChainId);
+                    wallet.list.connected.add(myEthWallet);
+                    wallets.push(myEthWallet);
+
+                    console.log(wallets);
+
+                } else {
+
+                    console.log('Coin98: Also no evm address no evm chain id');
+
+                }
+
+            })
+        } catch (e) {
+            console.log('Coin98 wallet EVM error: ' + e);
+            wallet.button.show.failure(button);
+        }
+
+    } else {
+        console.log('no evm chain in coin98');
+    }
+
+
+    // SOLANA
+
+    var mySolWallet = {
+        chain: 'Solana',
+        address: [],
+        type: 'extension',
+        name: 'coin98'
+    }
+
+    // once connected you can get the solana chain too
+    // just check that the account that is returned is not empty
+    if(isCoin98.sol) {
+
+        console.log('solana action');
+
+        try {
+            await window.coin98.sol
+            .request({method: 'sol_accounts'})
+            .then((accounts) => {
+
+                if(accounts.length === 0) {
+                    console.log('Coin98 wallet -> No Solana Account!');
+                } else {
+                    mySolWallet.address = accounts;
+                    wallet.list.connected.add(mySolWallet);
+                    allAddresses = allAddresses.concat(mySolWallet.address);
+                    wallet.button.show.success(button, allAddresses);
+                    wallets.push(mySolWallet);
+                    // wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+                    console.log('solana');
+                    console.log(accounts);
+                    console.log(mySolWallet);
+                    console.log(wallets);
+
+                }
+
+            })
+        } catch (e) {
+            console.log('Coin98 wallet solana error: ' + e);
+            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            // }
+        }
+
+    } else {
+        console.log('no solana chain in coin98');
+    }
+
+
+    // KARDIA
+
+    var myKardiaWallet = {
+        chain: 'Kardia',
+        address: [],
+        type: 'extension',
+        name: 'coin98'
+    }
+
+    if(isCoin98.kardia) {
+
+        console.log('kardia action');
+
+        try {
+            await win.kardiachain.enable()
+            .then((accounts) => {
+
+                myKardiaWallet.address = accounts;
+                wallet.list.connected.add(myKardiaWallet);
+                wallets.push(myKardiaWallet);
+                allAddresses = allAddresses.concat(myKardiaWallet.address);
+                wallet.button.show.success(button, allAddresses);
+                // wallet.help.mathConnectedToAtLeastOneAddress = true;
+
+                console.log('kardia');
+                console.log(accounts);
+                console.log(myKardiaWallet);
+                console.log(wallets);
+            })
+        } catch (e) {
+            console.log('Coin98 wallet kardia error: ' + e);
+            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            // }
+        }
+
+    } else {
+        console.log('no kardia chain in coin98');
+    }
+
+
+    // COSMOS
+
+    var myCosmosWallet = {
+        chain: 'Cosmos',
+        address: [],
+        type: 'extension',
+        name: 'coin98'
+    }
+
+    if(isCoin98.cosmos) {
+
+        console.log('cosmos action');
+
+        try {
+
+            var cosmos = window.coin98.cosmos('cosmos');
+
+            await cosmos.request({method: 'cosmos_accounts'})
+            .then((accounts) => {
+
+                if(accounts.length === 0) {
+                    console.log('no cosmos address available for coin98');
+                } else {
+                    myCosmosWallet.address = accounts;
+                    wallet.list.connected.add(myCosmosWallet);
+                    wallets.push(myCosmosWallet);
+                    allAddresses = allAddresses.concat(myCosmosWallet.address);
+                    wallet.button.show.success(button, allAddresses);
+
+                    console.log(wallets);
+                    console.log(wallets[0]);
+                }
+
+            })
+        } catch (e) {
+            console.log('Coin98 wallet cosmos error: ' + e);
+            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            // }
+        }
+    }
+
+
+    // TERRA
+
+    var myTerraWallet = {
+        chain: 'Terra',
+        address: [],
+        type: 'extension',
+        name: 'coin98'
+    }
+
+    if(isCoin98.terra) {
+        try {
+
+            var terra = window.coin98.cosmos('terra');
+
+            await terra.request({method: 'cosmos_accounts'})
+            .then((accounts) => {
+
+                if(accounts.length === 0) {
+                    console.log('no cosmos address available for coin98');
+                } else {
+                    myTerraWallet.address = accounts;
+                    wallet.list.connected.add(myTerraWallet);
+                    wallets.push(myTerraWallet);
+                    allAddresses = allAddresses.concat(myTerraWallet.address);
+                    wallet.button.show.success(button, allAddresses);
+
+                    console.log(wallets);
+                    console.log(wallets[0]);
+                }
+
+            })
+        } catch (e) {
+            console.log('Coin98 wallet terra error: ' + e);
+            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            // }
+        }
+    }
+
+
+    // debug
+    console.log(isCoin98);
+
+}
 
 // ---- MOBILE & DESKTOP WALLETS ---- //
 
@@ -1398,9 +2875,26 @@ wallet.mobile.reformatWCDiv = () => {
 
 }
 
+wallet.mobile.reformatMobileWCDiv = () => {
+
+    var div = document.getElementById('walletconnect-qrcode-modal').children[0];
+
+    if(div != undefined) {
+
+        div.style.transition = '0.5s';
+        div.style.transform = 'scale(1.5)';
+        div.style.top = '20rem';
+
+    } else {
+        console.log('wallet connect for mobile is not found');
+    }
+
+}
+
 wallet.mobile.manipulateWC = (string) => {
 
-    if(string != 'other') {
+    // if(string != 'other') {
+    if(wallet.list.mobile.predefinedWallets.includes(string)) {
 
         // manipulation on the injected wallet connect div
         setTimeout(()=>{
@@ -1439,6 +2933,65 @@ wallet.mobile.manipulateWC = (string) => {
 
 }
 
+wallet.mobile.refreshButtonState = () => {
+
+    var list = wallet.list.mobile.allWallets;
+
+    list.forEach((string) => {
+
+        if(!wallet.list.mobile.connected.includes(string)) {
+
+            var button = wallet.help.getButtonFromString(string, 'desktop-mobile');
+            var name = string;
+
+            wallet.button.buttonify(button, name);
+
+        } else {
+
+        }
+
+    });
+
+}
+
+wallet.mobile.other.generateNewButton = () => {
+
+    var div = '';
+    var n = wallet.mobile.other.newButtonCounter
+    var string = 'other-' + n;
+
+    wallet.list.mobile.allWallets.push(string);
+
+    div += '<button id="wallet-mobile-button-other-' + n + '" class="btn btn-lg btn-dark button-extra-4">';
+    div += '<span id="wallet-mobile-icon-other-' + n + '">';
+    div += '<img src="images/walletIcons/walletConnect.png" class="wallet-mobile-icon" /></span>';
+    div += '<span id="wallet-mobile-text-other-' + n + '" class="wallet-text">Other</span></button>';
+
+    var container = document.getElementById('wallet-mobile-button-extra')
+
+    // container.append(div);
+    container.innerHTML += div;
+
+    var button = document.getElementById(('wallet-mobile-button-other-' + n));
+
+    button.onclick = () => {
+
+        console.log('button clicked from ' + string);
+
+        // manipulation on the injected wallet connect div
+        //
+        // manipulation variation on 'other' button
+        //
+        wallet.mobile.manipulateWC(string);
+
+        // defining the call back for the respective button given string
+        wallet.connect.mobile.fromDesktop(string);
+
+    }
+
+    wallet.mobile.other.newButtonCounter++;
+
+}
 
 // BUTTON ACTIVATIONS FOR SHOW AND HIDE
 
@@ -1450,6 +3003,7 @@ var backgroundWC = document.getElementById('wallet-walletConnect-buttonList-back
 backgroundWC.onclick = () => {
     showButtonListBack = false
     wallet.mobile.hideListContainer(showButtonListBack);
+    wallet.mobile.refreshButtonState();
 }
 
 
@@ -1463,11 +3017,15 @@ wallet.connect.mobile.fromDesktop = async (string) => {
     wallet.button.show.wait(button)
     wallet.button.textify(button);
 
+    var isOther = !wallet.list.mobile.predefinedWallets.includes(string);
+
     var myWallet = {
         address: undefined,
         chain: undefined,
-        type: (string != 'other') ? 'Mobile' : 'Mobile|Desktop',
-        name: (string != 'other') ? string : 'Unknown'
+        // type: (string != 'other') ? 'Mobile' : 'Mobile or Desktop',
+        // name: (string != 'other') ? string : 'Unknown'
+        type: !isOther ? 'Mobile' : 'Mobile or Desktop',
+        name: !isOther ? string : 'Unknown'
     }
 
     // debug
@@ -1476,13 +3034,30 @@ wallet.connect.mobile.fromDesktop = async (string) => {
 
     wc.provider = new WalletConnectProvider.default({
         rpc: {
+            // eth
             1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+            // chronos
             25: "https://evm-cronos.crypto.org",
+            // binance
             56: "https://bsc-dataseed.binance.org/",
+            // eos
             59: 'https://api.eosargentina.io',
+            // polygon
             137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+            // avalanche
             43114: "https://api.avax.network/ext/bc/C/rpc",
+            // harmony
             1666600000: "https://api.harmony.one",
+            // HECO
+            128: "wss://ws-mainnet.hecochain.com",
+            // arbitrum
+            42161: "https://rpc.ankr.com/arbitrum",
+            // fantom
+            250: "https://rpc.ankr.com/arbitrum",
+            // Velas
+            106: "https://rpc.ankr.com/arbitrum",
+            // Celo
+            42220: "https://forno.celo.org"
         },
         bridge: 'https://bridge.walletconnect.org',
         qrcodeModalOptions: {
@@ -1491,10 +3066,20 @@ wallet.connect.mobile.fromDesktop = async (string) => {
                 "rainbow",
                 "metamask",
                 "argent",
-                "imtoken",
-                "pillar",
                 "coinomi",
                 "coin98",
+                'mathwallet',
+                'crypto.com',
+                'bitpay',
+                'ledger',
+                'zelcore',
+                '1inch',
+                'celowallet',
+                'alphawallet',
+                'nash',
+                'steakwallet',
+                "imtoken",
+                "pillar"
             ],
         },
     });
@@ -1516,11 +3101,23 @@ wallet.connect.mobile.fromDesktop = async (string) => {
 
                 myWallet.chain = wallet.help.convertChainIDtoName(res.toString());
 
+                wallet.list.connected.add(myWallet);
+                console.log(wallet.list.connected);
+
+                wallet.list.mobile.connected.push(string);
+                console.log(wallet.list.mobile.connected);
+
+                // add a new other button for further collection of other wallet addresses
+                wallet.mobile.other.generateNewButton();
+
+                // the long name is for explanatory purposes
+                // redefined button after the string is modified
+                button = wallet.help.getButtonFromString(string, 'desktop-mobile');
                 decorateWalletConnectButton = true;
                 wallet.button.show.success(button, myWallet.address, decorateWalletConnectButton);
 
-                wallet.list.connected.add(myWallet);
-                console.log(wallet.list.connected);
+
+                // TO DO ADD SENTOTABLE FUNCTION
 
             })
         })
@@ -1528,6 +3125,7 @@ wallet.connect.mobile.fromDesktop = async (string) => {
             wc.provider.disconnect();
             var showButtonList = true;
             wallet.mobile.hideListContainer(showButtonList);
+
             // wc.hide.app();
         })
 
@@ -1535,6 +3133,7 @@ wallet.connect.mobile.fromDesktop = async (string) => {
         console.log(string + ' wallet Connect error');
         console.log(switchError.code);
         console.log(switchError);
+        wallet.button.show.failure(button);
         // wc.hide.app();
     }
 
@@ -1570,8 +3169,143 @@ wallet.button.mobile.activate = (string) => {
 
 }
 
-wallet.list.mobile.forEach(wallet.button.mobile.activate);
+wallet.list.mobile.allWallets.forEach(wallet.button.mobile.activate);
 
+
+// --- FOR SMARTPHONES WALLET CONNECT SETUP --- //
+
+
+wallet.mobileConnect = async () => {
+
+    console.log('smartphone mobileConnect');
+
+    var myWallet = {
+        address: undefined,
+        chain: undefined,
+        type: 'mobile mobile',
+        name: 'Unknown'
+    }
+
+    // debug
+    console.log('myWallet initiated: ');
+    console.log(myWallet);
+
+    wc.provider = new WalletConnectProvider.default({
+        rpc: {
+            // eth
+            1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+            // chronos
+            25: "https://evm-cronos.crypto.org",
+            // binance
+            56: "https://bsc-dataseed.binance.org/",
+            // eos
+            59: 'https://api.eosargentina.io',
+            // polygon
+            137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+            // avalanche
+            43114: "https://api.avax.network/ext/bc/C/rpc",
+            // harmony
+            1666600000: "https://api.harmony.one",
+            // HECO
+            128: "wss://ws-mainnet.hecochain.com",
+            // arbitrum
+            42161: "https://rpc.ankr.com/arbitrum",
+            // fantom
+            250: "https://rpc.ankr.com/arbitrum",
+            // Velas
+            106: "https://rpc.ankr.com/arbitrum",
+            // Celo
+            42220: "https://forno.celo.org"
+        },
+        bridge: 'https://bridge.walletconnect.org',
+        // qrcodeModalOptions: {
+        //     mobileLinks: [
+        //         "trust",
+        //         "rainbow",
+        //         "metamask",
+        //         "argent",
+        //         "coinomi",
+        //         "coin98",
+        //         'mathwallet',
+        //         'crypto.com',
+        //         'bitpay',
+        //         'ledger',
+        //         'zelcore',
+        //         '1inch',
+        //         'celowallet',
+        //         'alphawallet',
+        //         'nash',
+        //         'steakwallet',
+        //         "imtoken",
+        //         "pillar"
+        //     ],
+        // },
+    });
+
+    try {
+
+        await wc.provider
+        .enable()
+        .then((address)=>{
+
+            myWallet.address = address;
+
+            wc.web3 = new Web3(wc.provider);
+            wc.web3.eth.getChainId()
+            .then((res)=>{
+
+                console.log(res);
+                console.log(typeof res);
+
+                myWallet.chain = wallet.help.convertChainIDtoName(res.toString());
+
+                wallet.list.connected.add(myWallet);
+                console.log(wallet.list.connected);
+
+                wallet.list.mobile.connected.push(string);
+                console.log(wallet.list.mobile.connected);
+
+
+                // TO DO ADD SENTOTABLE FUNCTION
+
+            })
+        })
+        .then(()=> {
+            wc.provider.disconnect();
+        })
+
+    } catch (switchError) {
+        console.log(string + ' wallet Connect error for smartphones');
+        console.log(switchError.code);
+        console.log(switchError);
+    }
+
+}
+
+wallet.mobileButton = document.getElementById('wallet-button-walletConnect-mobile');
+
+wallet.mobileButton.onclick = () => {
+
+    setTimeout(()=>{
+        wallet.mobile.reformatMobileWCDiv();
+        setTimeout(()=>{
+            wallet.mobile.reformatMobileWCDiv();
+            setTimeout(()=>{
+                wallet.mobile.reformatMobileWCDiv();
+                setTimeout(()=>{
+                    wallet.mobile.reformatMobileWCDiv();
+                    setTimeout(()=>{
+                        wallet.mobile.reformatMobileWCDiv();
+                    }, 200)
+                }, 200)
+            }, 200)
+        }, 200)
+    }, 200)
+
+
+    wallet.mobileConnect();
+
+}
 
 
 // debug stuff
