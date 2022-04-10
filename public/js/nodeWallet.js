@@ -428,7 +428,9 @@ wallet.button.buttonify = (button, name) => {
 
 }
 
+
 // --- ALERT SCREEN SETUP --- //
+
 wallet.alert.show = (name) => {
 
     name = name === undefined ? 'Unknown' : name;
@@ -451,6 +453,8 @@ wallet.alert.hide = () => {
 wallet.alert.background = document.getElementById('wallet-alert-background');
 
 wallet.alert.background.onclick = wallet.alert.hide;
+
+
 
 // --- BUTTON DIV CREATION & ACTIVATION --- //
 
@@ -815,7 +819,7 @@ wallet.detectWallets = () => {
 }
 
 
-// --- REGISTER DETECTED --- //
+// --- REGISTER DETECTED WALLETS --- //
 
 wallet.registerDetectionResults = () => {
 
@@ -1066,11 +1070,80 @@ wallet.button.detect.onclick = () => {
 
 }
 
+// ------------------ //
 // --- CONNECTION --- //
+// ------------------ //
 
 // BITCOIN
 // bitcoin
+wallet.help.bitcoinConnectedToAtLeastOneAddress = false;
+wallet.connect.bitcoin = async () => {
 
+    var button = wallet.help.getButtonFromString('bitcoin', 'extension');
+    wallet.button.show.wait(button)
+
+    var addresses = [];
+    var wallets = [];
+
+    var myWallet1 = {
+        address: [],
+        chain: 'Bitcoin',
+        type: 'extension',
+        name: 'unknown bitcoin wallet 1'
+    }
+
+    // math wallet way
+    if(win.bitcoin.getAccount != undefined) {
+        try {
+            await win.bitcoin.getAccount()
+            .then(res => {
+                myWallet1.address = [res.address];
+                addresses = addresses.concat(myWallet1.address);
+                wallet.button.show.success(button, addresses);
+                wallet.help.bitcoinConnectedToAtLeastOneAddress = true;
+                wallet.list.connected.add(myWallet1);
+                wallets.push(myWallet1);
+            })
+        } catch (e) {
+            console.log('unknown bitcoin wallet error 1: ' + e);
+            if(!wallet.help.bitcoinConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+
+    }
+
+    var myWallet2 = {
+        address: [],
+        chain: 'Bitcoin',
+        type: 'extension',
+        name: 'unknown bitcoin wallet 2'
+    }
+
+    // liquality way
+    if(win.bitcoin.enable != undefined) {
+        try {
+            await win.bitcoin.enable()
+            .then(res => {
+                myWallet2.address = [res[0].address];
+                addresses = addresses.concat(myWallet2.address);
+                wallet.button.show.success(button, addresses);
+                wallet.help.bitcoinConnectedToAtLeastOneAddress = true;
+                wallet.list.connected.add(myWallet2);
+                wallets.push(myWallet2);
+            })
+        } catch (e) {
+            console.log('unknown bitcoin wallet error 2: ' + e);
+            if(!wallet.help.bitcoinConnectedToAtLeastOneAddress) {
+                wallet.button.show.failure(button);
+            }
+        }
+
+    }
+
+    console.log(wallets);
+
+}
 
 // EVM
 
@@ -2417,6 +2490,22 @@ wallet.connect.math = async () => {
 
 // coin98
 //
+// NOTE: fetches multiple addresses that are available like clover but unlike clover
+// different chains and addresses need to be defined earlier by the wallet user
+// therefore there is not guarantee of  having multiple addresses.
+// coin98 has multiple conflict disablers that causes to not inject EVM, Tron and kardia
+// chain related addresses. If these are disabled my best guess is that the wallet will be
+// used for dot or solana chains which are checked for and if they exist are fetched
+// in addition we check for cosmos and terra accounts if they exist they are also fetched
+// So like clover and unlike math wallet to get multiple addresses there are no needs for
+// reloading of the page
+//
+// wheteher a solana wallet exists is done in a peculiar way where
+// a request is made to the wallet and if it is fullfilled it is added to the list of
+// addresses that will be fetched. This process occurs 1second more than the other ones therefore
+// if coin98 wallet only has solana its button will appear 1 second later
+//
+wallet.help.coin98ConnectedToAtLeastOneAddress = false;
 wallet.connect.coin98 = async () => {
 
     var button = wallet.help.getButtonFromString('coin98', 'extension');
@@ -2454,7 +2543,7 @@ wallet.connect.coin98 = async () => {
                     allAddresses = allAddresses.concat(accounts);
                     accounts.forEach(i => myEthWallet.address.push(i));
                     wallet.button.show.success(button, allAddresses);
-                    // wallet.help.mathConnectedToAtLeastOneAddress = true;
+                    wallet.help.coin98ConnectedToAtLeastOneAddress = true;
 
                 }
 
@@ -2531,9 +2620,9 @@ wallet.connect.coin98 = async () => {
             })
         } catch (e) {
             console.log('Coin98 wallet solana error: ' + e);
-            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+            if(!wallet.help.coin98ConnectedToAtLeastOneAddress) {
                 wallet.button.show.failure(button);
-            // }
+            }
         }
 
     } else {
@@ -2572,9 +2661,9 @@ wallet.connect.coin98 = async () => {
             })
         } catch (e) {
             console.log('Coin98 wallet kardia error: ' + e);
-            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+            if(!wallet.help.coin98ConnectedToAtLeastOneAddress) {
                 wallet.button.show.failure(button);
-            // }
+            }
         }
 
     } else {
@@ -2618,9 +2707,9 @@ wallet.connect.coin98 = async () => {
             })
         } catch (e) {
             console.log('Coin98 wallet cosmos error: ' + e);
-            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+            if(!wallet.help.coin98ConnectedToAtLeastOneAddress) {
                 wallet.button.show.failure(button);
-            // }
+            }
         }
     }
 
@@ -2658,9 +2747,9 @@ wallet.connect.coin98 = async () => {
             })
         } catch (e) {
             console.log('Coin98 wallet terra error: ' + e);
-            // if(!wallet.help.mathConnectedToAtLeastOneAddress) {
+            if(!wallet.help.coin98ConnectedToAtLeastOneAddress) {
                 wallet.button.show.failure(button);
-            // }
+            }
         }
     }
 
@@ -2670,7 +2759,12 @@ wallet.connect.coin98 = async () => {
 
 }
 
+
+
+
+// ---------------------------------- //
 // ---- MOBILE & DESKTOP WALLETS ---- //
+// ---------------------------------- //
 
 
 // ---- ANIMATIONS --- //
@@ -3007,7 +3101,10 @@ backgroundWC.onclick = () => {
 }
 
 
+
+// ------------------ //
 // --- CONNECTION --- //
+// ------------------ //
 
 var wc = {};
 
@@ -3306,15 +3403,3 @@ wallet.mobileButton.onclick = () => {
     wallet.mobileConnect();
 
 }
-
-
-// debug stuff
-// wallet.list.detected = [
-//     'metamask',
-//     'coinbase',
-//     'yoroi',
-//     'phantom',
-//     'polkadot'
-// ]
-// wallet.list.detected.forEach(wallet.button.inject);
-// wallet.list.detected.forEach(wallet.button.activate);
