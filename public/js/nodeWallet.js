@@ -1034,6 +1034,7 @@ wallet.registerDetectionResults = () => {
 
 }
 
+// tie the detection and creation of extension wallet to a button click
 wallet.button.detect = document.getElementById('wallet-button-detect');
 wallet.button.detect.onclick = () => {
 
@@ -1075,7 +1076,16 @@ wallet.button.detect.onclick = () => {
 // ------------------ //
 
 // BITCOIN
+
 // bitcoin
+//
+// NOTE: while exploring various multi chain wallets I have observed 2 common
+// ways to connect to the wallet. Both of these method are accounted for here
+// Also I have encountered 2 common ways to detect a bitcoin wallet through the injected
+// bitcoin object. Yet for some reason, wallets fail to also add some items to identify
+// which wallet this may be. Therefore for bitcoin we have a separate generic connect
+// bitcoin button to whatever bitcoin wallet active
+//
 wallet.help.bitcoinConnectedToAtLeastOneAddress = false;
 wallet.connect.bitcoin = async () => {
 
@@ -1144,6 +1154,7 @@ wallet.connect.bitcoin = async () => {
     console.log(wallets);
 
 }
+
 
 // EVM
 
@@ -2096,6 +2107,7 @@ wallet.connect.kardia = async () => {
 
 }
 
+
 // MUTLI CHAIN
 
 // clover
@@ -2766,9 +2778,7 @@ wallet.connect.coin98 = async () => {
 // ---- MOBILE & DESKTOP WALLETS ---- //
 // ---------------------------------- //
 
-
 // ---- ANIMATIONS --- //
-
 
 // SHOW HIDE
 wallet.mobile.showListContainer = () => {
@@ -3100,8 +3110,6 @@ backgroundWC.onclick = () => {
     wallet.mobile.refreshButtonState();
 }
 
-
-
 // ------------------ //
 // --- CONNECTION --- //
 // ------------------ //
@@ -3269,8 +3277,9 @@ wallet.button.mobile.activate = (string) => {
 wallet.list.mobile.allWallets.forEach(wallet.button.mobile.activate);
 
 
+// -------------------------------------------- //
 // --- FOR SMARTPHONES WALLET CONNECT SETUP --- //
-
+// -------------------------------------------- //
 
 wallet.mobileConnect = async () => {
 
