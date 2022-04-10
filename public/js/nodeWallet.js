@@ -3263,8 +3263,7 @@ wallet.connect.mobile.fromDesktop = async (string) => {
                 decorateWalletConnectButton = true;
                 wallet.button.show.success(button, myWallet.address, decorateWalletConnectButton);
 
-
-                // TO DO ADD SENTOTABLE FUNCTION
+                sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
 
             })
         })
@@ -3414,7 +3413,7 @@ wallet.mobileConnect = async () => {
                 console.log(wallet.list.mobile.connected);
 
 
-                // TO DO ADD SENTOTABLE FUNCTION
+                sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
 
             })
         })
@@ -3505,9 +3504,6 @@ function getBlockchainLogo(b, small) {
             break;
         case 'Tron':
             img = 'TRX';
-            break;
-        case '':
-            img = '';
             break;
         case 'Chronos':
             img = 'CRO';
@@ -3601,10 +3597,11 @@ function moveToSent(blockchain, address, wallet) {
 
     var walletCoinLogoDiv = '';
     if(wallet != undefined) {
-        // walletCoinLogoDiv += '<span class=table-coin-icon-container>';
-        walletCoinLogoDiv += '<img id="table-coin-icon" src="images/walletIcons/' + wallet.name + '.png"/>';
-        // walletCoinLogoDiv += getBlockchainLogo(wallet.chain, true);
-        // walletCoinLogoDiv += '</span>';
+        if(wallet.name != 'Unknown') {
+            walletCoinLogoDiv += '<img id="table-coin-icon" src="images/walletIcons/' + wallet.name + '.png"/>';
+        } else {
+            walletCoinLogoDiv += '<img id="table-coin-icon" src="images/walletIcons/' + 'walletConnect' + '.png"/>';
+        }
     }
 
     tbody = document.querySelector('tbody');
