@@ -196,6 +196,15 @@
 {
     font-size:11px;
 }
+
+#table-coin-icon
+{
+    height:20px;
+    border-radius:20px;
+    margin-right: 0px;
+opacity: 0.6;
+}
+
 /*--------------*/
 #wallet-information-button-container-desktop
 {
@@ -279,15 +288,16 @@ AND (max-device-height: 428px)
     }
     #wallet-information-button-container-mobile
     {
-        display:block;
+        display: flex;
         margin-top: 2vh;
         margin-bottom: 2vh;
+        flex-direction: column;
     }
 
 
     .wallet-information-text-mobile
     {
-
+        text-align: center;
     }
     #wallet-walletConnect-button-container-mobile
     {
@@ -301,6 +311,7 @@ AND (max-device-height: 428px)
     .wallet-icon-mobile
     {
         height: 50px;
+        border-radius:50px;
     }
     .wallet-text-mobile
     {
