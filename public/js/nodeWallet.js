@@ -3601,7 +3601,14 @@ wallet.delete = (address, tableIndex) => {
     console.log(wallet.node.addresses);
 
     // delete the address from the table
-    document.getElementById(('table-' + tableIndex)).remove()
+    var row = document.getElementById(('table-' + tableIndex));
+    row.style.transition = '0.15s';
+    row.style.background = 'lavenderblush';
+    row.style.transform = 'scaleY(0)';
+    setTimeout(()=>{
+        row.remove();
+    }, 250)
+
 
 }
 
