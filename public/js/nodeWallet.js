@@ -1,4 +1,5 @@
 var node = parent.node;
+var W = parent.W;
 
 var wallet = {
     mobileConnect: undefined,
@@ -196,6 +197,7 @@ var wallet = {
     },
 
     help: {
+        activateDeleteButton: undefined,
         capitalizeFirstLetter: (string) => {
 
             if(string != '') {
@@ -300,7 +302,42 @@ var wallet = {
 
             return chainName;
 
-        }
+        },
+        // getBalance: async (address, type, myProvider) => {
+        //
+        //     var balance;
+        //
+        //     if(type === 'evm') {
+        //
+        //         var web3 = new Web3(myProvider);
+        //
+        //         await myProvider
+        //         .request({method: 'eth_getBalance', params:[address, "latest"]})
+        //         .then((res) => {
+        //             console.log('balance');
+        //             console.log(res);
+        //             console.log(web3.utils.fromWei(res, 'ether'));
+        //             balance = web3.utils.fromWei(res, 'ether');
+        //             return balance;
+        //         })
+        //
+        //     }
+        //
+        //     if(type === 'solana') {
+        //
+        //         await myProvider
+        //         .request({method: 'getBalance', params:address})
+        //         .then((res) => {
+        //             console.log(res);
+        //         })
+        //
+        //     }
+        //
+        // }
+    },
+
+    node: {
+        addresses: [], //
     }
 }
 
@@ -1114,7 +1151,7 @@ wallet.connect.bitcoin = async () => {
                 wallet.list.connected.add(myWallet1);
                 wallets.push(myWallet1);
 
-                sendCryptoAddress(myWallet1.chain, myWallet1.address, myWallet1);
+                wallet.save(myWallet1);
 
             })
         } catch (e) {
@@ -1145,7 +1182,7 @@ wallet.connect.bitcoin = async () => {
                 wallet.list.connected.add(myWallet2);
                 wallets.push(myWallet2);
 
-                sendCryptoAddress(myWallet2.chain, myWallet2.address, myWallet2);
+                wallet.save(myWallet2);
 
             })
         } catch (e) {
@@ -1214,9 +1251,14 @@ wallet.connect.metamask = async () => {
 
             console.log(wallet.list.connected);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
+
 
         })
+
+        // wallet.help.getBalance(myWallet.address[0], 'evm', myProvider);
 
     } catch(e) {
         console.log('Metamask error: ' + e);
@@ -1275,7 +1317,9 @@ wallet.connect.coinbase = async () => {
 
             console.log(wallet.list.connected);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
 
@@ -1325,7 +1369,10 @@ wallet.connect.binance = async () => {
 
             console.log(wallet.list.connected);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
+
 
         })
 
@@ -1379,7 +1426,10 @@ wallet.connect.xdefi = async () => {
 
             console.log(wallet.list.connected);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
+
 
         })
 
@@ -1419,7 +1469,9 @@ wallet.connect.phantom = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            wallet.save(myWallet);
+
+            // wallet.help.getBalance(myWallet.address, 'solana', win.solana)
 
         })
 
@@ -1458,7 +1510,9 @@ wallet.connect.solflare = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
 
@@ -1492,7 +1546,9 @@ wallet.connect.slope = async () => {
 
         wallet.button.show.success(button, myWallet.address);
 
-        sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+        // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+        wallet.save(myWallet);
 
     })
 
@@ -1574,7 +1630,9 @@ wallet.connect.yoroi = async () => {
 
             wallet.button.show.success(button, accounts);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -1646,7 +1704,9 @@ wallet.connect.nami = async () => {
 
             wallet.button.show.success(button, accounts);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -1718,7 +1778,9 @@ wallet.connect.eternl = async () => {
 
             wallet.button.show.success(button, accounts);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -1790,7 +1852,9 @@ wallet.connect.flint = async () => {
 
             wallet.button.show.success(button, accounts);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -1841,7 +1905,9 @@ wallet.connect.typhon = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -1885,7 +1951,9 @@ wallet.connect.polkadot = async () => {
 
             console.log(wallet.list.connected);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
 
@@ -1932,7 +2000,9 @@ wallet.connect.keplr = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         });
 
@@ -1981,7 +2051,9 @@ wallet.connect.tronlink = async () => {
 
                 wallet.button.show.success(button, myWallet.address);
 
-                sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+                // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+                wallet.save(myWallet);
 
             }
 
@@ -2027,7 +2099,9 @@ wallet.connect.algosigner = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -2072,7 +2146,9 @@ wallet.connect.auro = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -2113,7 +2189,9 @@ wallet.connect.kardia = async () => {
 
             wallet.button.show.success(button, myWallet.address);
 
-            sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+            // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+
+            wallet.save(myWallet);
 
         })
     } catch (e) {
@@ -2188,7 +2266,8 @@ wallet.connect.clover = async () => {
                 wallets.push(myEthWallet);
 
 
-                sendCryptoAddress(myEthWallet.chain, myEthWallet.address, myEthWallet);
+                // sendCryptoAddress(myEthWallet.chain, myEthWallet.address, myEthWallet);
+                wallet.save(myEthWallet);
 
             })
 
@@ -2226,7 +2305,9 @@ wallet.connect.clover = async () => {
                 wallet.button.show.success(button, allAddresses);
                 wallet.help.cloverConnectedToAtLeastOneAddress = true;
 
-                sendCryptoAddress(myDotWallet.chain, myDotWallet.address, myDotWallet);
+                // sendCryptoAddress(myDotWallet.chain, myDotWallet.address, myDotWallet);
+
+                wallet.save(myDotWallet);
 
             })
 
@@ -2262,7 +2343,9 @@ wallet.connect.clover = async () => {
                 wallet.button.show.success(button, allAddresses);
                 wallet.help.cloverConnectedToAtLeastOneAddress = true;
 
-                sendCryptoAddress(mySolWallet.chain, mySolWallet.address, mySolWallet);
+                // sendCryptoAddress(mySolWallet.chain, mySolWallet.address, mySolWallet);
+
+                wallet.save(mySolWallet);
 
             })
         } catch (e) {
@@ -2296,7 +2379,9 @@ wallet.connect.clover = async () => {
                 wallet.button.show.success(button, allAddresses);
                 wallet.help.cloverConnectedToAtLeastOneAddress = true;
 
-                sendCryptoAddress(myKDAWallet.chain, myKDAWallet.address, myKDAWallet);
+                // sendCryptoAddress(myKDAWallet.chain, myKDAWallet.address, myKDAWallet);
+
+                wallet.save(myKDAWallet);
 
             })
         } catch (e) {
@@ -2381,7 +2466,8 @@ wallet.connect.math = async () => {
 
                 console.log(wallets);
 
-                sendCryptoAddress(myEthWallet.chain, myEthWallet.address, myEthWallet);
+                // sendCryptoAddress(myEthWallet.chain, myEthWallet.address, myEthWallet);
+                wallet.save(myEthWallet);
 
             })
 
@@ -2416,7 +2502,8 @@ wallet.connect.math = async () => {
 
                 console.log(wallets);
 
-                sendCryptoAddress(mySolWallet.chain, mySolWallet.address, mySolWallet);
+                // sendCryptoAddress(mySolWallet.chain, mySolWallet.address, mySolWallet);
+                wallet.save(mySolWallet);
 
             })
         } catch (e) {
@@ -2457,7 +2544,9 @@ wallet.connect.math = async () => {
 
                 console.log(wallets);
 
-                sendCryptoAddress(myDotWallet.chain, myDotWallet.address, myDotWallet);
+                // sendCryptoAddress(myDotWallet.chain, myDotWallet.address, myDotWallet);
+
+                wallet.save(myDotWallet);
 
             })
 
@@ -2492,7 +2581,9 @@ wallet.connect.math = async () => {
 
                 console.log(wallets);
 
-                sendCryptoAddress(myTronWallet.chain, myTronWallet.address, myTronWallet);
+                // sendCryptoAddress(myTronWallet.chain, myTronWallet.address, myTronWallet);
+
+                wallet.save(myTronWallet);
 
             } else {
                 console.log('tron address for math wallet does not exist');
@@ -2604,7 +2695,8 @@ wallet.connect.coin98 = async () => {
 
                     console.log(wallets);
 
-                    sendCryptoAddress(myEthWallet.chain, myEthWallet.address, myEthWallet);
+                    // sendCryptoAddress(myEthWallet.chain, myEthWallet.address, myEthWallet);
+                    wallet.save(myEthWallet);
 
                 } else {
 
@@ -2658,7 +2750,8 @@ wallet.connect.coin98 = async () => {
                     console.log(mySolWallet);
                     console.log(wallets);
 
-                    sendCryptoAddress(mySolWallet.chain, mySolWallet.address, mySolWallet);
+                    // sendCryptoAddress(mySolWallet.chain, mySolWallet.address, mySolWallet);
+                    wallet.save(mySolWallet);
 
                 }
 
@@ -2704,7 +2797,8 @@ wallet.connect.coin98 = async () => {
                 console.log(myKardiaWallet);
                 console.log(wallets);
 
-                sendCryptoAddress(myKardiaWallet.chain, myKardiaWallet.address, myKardiaWallet);
+                // sendCryptoAddress(myKardiaWallet.chain, myKardiaWallet.address, myKardiaWallet);
+                wallet.save(myKardiaWallet);
 
             })
         } catch (e) {
@@ -2751,7 +2845,8 @@ wallet.connect.coin98 = async () => {
 
                     console.log(wallets);
 
-                    sendCryptoAddress(myCosmosWallet.chain, myCosmosWallet.address, myCosmosWallet);
+                    // sendCryptoAddress(myCosmosWallet.chain, myCosmosWallet.address, myCosmosWallet);
+                    wallet.save(myCosmosWallet);
 
                 }
 
@@ -2794,7 +2889,8 @@ wallet.connect.coin98 = async () => {
 
                     console.log(wallets);
 
-                    sendCryptoAddress(myTerraWallet.chain, myTerraWallet.address, myTerraWallet);
+                    // sendCryptoAddress(myTerraWallet.chain, myTerraWallet.address, myTerraWallet);
+                    wallet.save(myTerraWallet);
 
                 }
 
@@ -3011,9 +3107,11 @@ wallet.mobile.reformatWCDiv = () => {
 
     if(div != undefined) {
 
-        div.style.transition = '0.5s';
-        div.style.transform = 'scale(0.85)';
-        div.style.top = '-2rem';
+        div.style.transition = '0.05s';
+        div.style.transform = 'scale(0.9)';
+        div.style.top = '0rem';
+
+        parent.scrollTo(0, 0);
 
     } else {
         console.log('wallet connect is not found');
@@ -3237,42 +3335,56 @@ wallet.connect.mobile.fromDesktop = async (string) => {
         .enable()
         .then((address)=>{
 
+            // get address
             myWallet.address = address;
 
+            // get chain if it is EVM wallet
             wc.web3 = new Web3(wc.provider);
-            wc.web3.eth.getChainId()
-            .then((res)=>{
+            if(wc.web3.eth != undefined) { // check if EVM
 
-                console.log(res);
-                console.log(typeof res);
+                wc.web3.eth.getChainId()
+                .then((res)=>{
 
-                myWallet.chain = wallet.help.convertChainIDtoName(res.toString());
+                    console.log(res);
+                    console.log(typeof res);
 
-                wallet.list.connected.add(myWallet);
-                console.log(wallet.list.connected);
+                    myWallet.chain = wallet.help.convertChainIDtoName(res.toString());
 
-                wallet.list.mobile.connected.push(string);
-                console.log(wallet.list.mobile.connected);
+                    wallet.list.connected.add(myWallet);
+                    console.log(wallet.list.connected);
 
-                // add a new other button for further collection of other wallet addresses
-                wallet.mobile.other.generateNewButton();
+                    // notice here we are also adding possible desktop wallets into the mobile list
+                    wallet.list.mobile.connected.push(string);
+                    console.log(wallet.list.mobile.connected);
 
-                // the long name is for explanatory purposes
-                // redefined button after the string is modified
-                button = wallet.help.getButtonFromString(string, 'desktop-mobile');
-                decorateWalletConnectButton = true;
-                wallet.button.show.success(button, myWallet.address, decorateWalletConnectButton);
+                    // for other button - need to account for strings other, other-0, other-1, etc
+                    // thus check isOther by checking whether it is predefined
+                    // add a new other button for further collection of other wallet addresses
+                    if(isOther) {
+                        console.log('');
+                        console.log('A new other button is being generated');
+                        console.log('');
+                        wallet.mobile.other.generateNewButton();
+                    }
 
-                sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+                    // the long name is for explanatory purposes
+                    // redefined button after the string is modified
+                    button = wallet.help.getButtonFromString(string, 'desktop-mobile');
+                    decorateWalletConnectButton = true;
+                    wallet.button.show.success(button, myWallet.address, decorateWalletConnectButton);
 
-            })
+                    // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+                    wallet.save(myWallet);
+
+                })
+
+            }
+
         })
         .then(()=> {
             wc.provider.disconnect();
             var showButtonList = true;
             wallet.mobile.hideListContainer(showButtonList);
-
-            // wc.hide.app();
         })
 
     } catch (switchError) {
@@ -3365,28 +3477,6 @@ wallet.mobileConnect = async () => {
             42220: "https://forno.celo.org"
         },
         bridge: 'https://bridge.walletconnect.org',
-        // qrcodeModalOptions: {
-        //     mobileLinks: [
-        //         "trust",
-        //         "rainbow",
-        //         "metamask",
-        //         "argent",
-        //         "coinomi",
-        //         "coin98",
-        //         'mathwallet',
-        //         'crypto.com',
-        //         'bitpay',
-        //         'ledger',
-        //         'zelcore',
-        //         '1inch',
-        //         'celowallet',
-        //         'alphawallet',
-        //         'nash',
-        //         'steakwallet',
-        //         "imtoken",
-        //         "pillar"
-        //     ],
-        // },
     });
 
     try {
@@ -3398,24 +3488,30 @@ wallet.mobileConnect = async () => {
             myWallet.address = address;
 
             wc.web3 = new Web3(wc.provider);
-            wc.web3.eth.getChainId()
-            .then((res)=>{
+            if(wc.web3.eth != undefined) {
 
-                console.log(res);
-                console.log(typeof res);
+                wc.web3.eth.getChainId()
+                .then((res)=>{
 
-                myWallet.chain = wallet.help.convertChainIDtoName(res.toString());
+                    console.log(res);
+                    console.log(typeof res);
 
-                wallet.list.connected.add(myWallet);
-                console.log(wallet.list.connected);
+                    myWallet.chain = wallet.help.convertChainIDtoName(res.toString());
 
-                wallet.list.mobile.connected.push(string);
-                console.log(wallet.list.mobile.connected);
+                    wallet.list.connected.add(myWallet);
+                    console.log(wallet.list.connected);
+
+                    wallet.list.mobile.connected.push(string);
+                    console.log(wallet.list.mobile.connected);
 
 
-                sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+                    // sendCryptoAddress(myWallet.chain, myWallet.address, myWallet);
+                    wallet.save(myWallet);
 
-            })
+                })
+
+            }
+
         })
         .then(()=> {
             wc.provider.disconnect();
@@ -3457,8 +3553,139 @@ wallet.mobileButton.onclick = () => {
 
 
 
+wallet.save = (myWallet) => {
+
+    console.log('Wallet: ' + myWallet.name);
+    console.log('Address(es): ' + myWallet.address);
+
+    if(myWallet.address.length != 0) {
+
+        myWallet.address.forEach((address) => {
+
+            // send the wallet to the database
+            // call for move to send to move it to the table
+            sendCryptoAddress(myWallet.chain, address, myWallet);
+
+        })
+
+    } else {
+        console.log('There are no wallets in: ');
+        console.log(myWallet);;
+    }
+
+    // activate delete buttons on the table
+    wallet.help.updateTableDeleteButton();
+
+    W.adjustFrameHeight();
+
+}
+
+// we use the address to find the address in the addresses list and delete
+// we use the counter to find the id in the table and delete it
+wallet.delete = (address, tableIndex) => {
+
+    // delete the address from the database
+    console.log('before');
+    console.log(wallet.node.addresses);
+
+    var index = wallet.getIndex(address);
+    wallet.node.addresses.splice(index, 1);
+
+    console.log('after');
+    console.log(wallet.node.addresses);
+
+    // delete the address from the table
+    document.getElementById(('table-' + tableIndex)).remove()
+
+}
+
+wallet.getIndex = (address) => {
+
+    console.log('looking for address');
+    console.log(address);
+
+    wallet.node.addresses.forEach((wallet, index) => {
+
+        if(wallet.address === address) {
+
+            console.log('wallet found!');
+            console.log(wallet);
+            console.log('wallet address');
+            console.log(wallet.address);
+            console.log('wallet index');
+            console.log(index);
+
+            return index;
+
+        }
+
+    })
+
+    // console.log('no wallet with address ' + address + ' is found');
+
+}
+
+wallet.help.getAddressFromTableId = (index) => {
+
+    // console.log('get address from table id');
+    // console.log(index);
+
+    var row = document.getElementById('blockchain_' + index);
+    var address = row.title;
+
+    return address;
+
+}
 
 
+wallet.help.updateDeleteButton = (row) => {
+
+    var index = parseInt(row.id.split('-')[1]);
+
+    var address = wallet.help.getAddressFromTableId(index);
+
+    console.log(index);
+    console.log(address);
+
+    wallet.delete(address, index);
+
+}
+
+
+wallet.help.updateTableDeleteButton = () => {
+
+    var rowIndex, deleteButton;
+
+    var table =document.querySelector('tbody');
+
+    var tableArray = Array.from(table.children);
+
+
+    tableArray.forEach((row) => {
+
+        // console.log(row);
+        // console.log(row.id);
+
+        // rowIndex = parseInt(row.id.split('-')[1]);
+
+        // console.log(rowIndex);
+
+        deleteButton = row.children[3].children[0];
+
+        // console.log(deleteButton);
+
+        deleteButton.onclick = () => {
+
+            wallet.help.updateDeleteButton(row)
+
+        }
+
+    })
+
+}
+
+
+// --- SOC CODE MODIFIED --- //
 
 var sent = document.getElementById("sent");
 
@@ -3493,7 +3720,7 @@ function getBlockchainLogo(b, small) {
         case 'Near':
             img = 'NEAR';
             break;
-        case 'Phantom':
+        case 'Fantom':
             img = 'FTM';
             break;
         case 'Polkadot':
@@ -3549,42 +3776,44 @@ function getBlockchainLogo(b, small) {
 }
 
 
-function sendCryptoAddress(blockchain, address, wallet, send) {
 
-    var addresses;
+function sendCryptoAddress(blockchain, address, myWallet, send) {
+
+    // var addresses;
     if (send !== false) {
 
         node.set({
             address: address,
             blockchain: blockchain,
-            isWallet: (wallet != undefined),
-            walletType: wallet.type,
-            walletName: wallet.name,
+            isWallet: (myWallet != undefined),
+            walletType: myWallet.type,
+            walletName: myWallet.name,
         });
 
         // uncomment this later
-        // addresses = node.game.session('crypto') || [];
-        addresses = [];
+        // wallet.node.addresses = node.game.session('crypto') || [];
+        // we predefine wallet.node.addresses in the wallet object then by calling this
+        // function we update it
 
-        addresses.push({
+        wallet.node.addresses.push({
             address: address,
             blockchain: blockchain,
-            isWallet: (wallet != undefined),
-            walletType: wallet.type,
-            walletName: wallet.name,
+            isWallet: (myWallet != undefined),
+            walletType: myWallet.type,
+            walletName: myWallet.name,
         });
 
         // uncomment this later
-        // node.game.session('crypto', addresses);
+        // node.game.session('crypto', wallet.node.addresses);
 
     }
 
-    moveToSent(blockchain, address, wallet);
+    moveToSent(blockchain, address, myWallet);
 
 };
 
 var counter = 1;
-function moveToSent(blockchain, address, wallet) {
+function moveToSent(blockchain, address, myWallet) {
 
     var id, t, shortBl, shortAddr, tbody;
 
@@ -3596,9 +3825,9 @@ function moveToSent(blockchain, address, wallet) {
     shortBl = shorten(blockchain);
 
     var walletCoinLogoDiv = '';
-    if(wallet != undefined) {
-        if(wallet.name != 'Unknown') {
-            walletCoinLogoDiv += '<img id="table-coin-icon" src="images/walletIcons/' + wallet.name + '.png"/>';
+    if(myWallet != undefined) {
+        if(myWallet.name != 'Unknown') {
+            walletCoinLogoDiv += '<img id="table-coin-icon" src="images/walletIcons/' + myWallet.name + '.png"/>';
         } else {
             walletCoinLogoDiv += '<img id="table-coin-icon" src="images/walletIcons/' + 'walletConnect' + '.png"/>';
         }
@@ -3607,7 +3836,7 @@ function moveToSent(blockchain, address, wallet) {
     tbody = document.querySelector('tbody');
     id = 'blockchain_' + counter;
     t = '';
-    t += '<tr>'
+    t += '<tr id="table-' + counter + '">';
     t += '<td>' + counter;
     // t += walletCoinLogoDiv;
     t += '</td>';
@@ -3616,7 +3845,9 @@ function moveToSent(blockchain, address, wallet) {
     t += shortBl;
     t += '</td>';
     t += '<td style="font-family: monospace, sans-serif" id="' + id + '" title="' + address + '">' + shortAddr + '</td>';
+    t += '<td class="table-row-delete" id="delete-icon-' + counter + '"><img id="table-delete-icon-' + counter + '" class="table-delete-general-icon-class" src="images/walletIcons/delete.png"/></td>';
     tbody.innerHTML += t;
+
     counter++;
 
     // uncomment these later

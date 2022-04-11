@@ -71,7 +71,7 @@
 #wallet-alert-container
 {
     z-index: 99;
-    position: fixed;
+    position: absolute;
     width: 100%;
     height: 100%;
     inset: 0px;
@@ -93,6 +93,8 @@
 }
 #wallet-alert-text
 {
+    top:10rem;
+    position:absolute;
     z-index: 2;
     max-width: 100%;
     max-height: calc(100vh - 2rem);
@@ -107,7 +109,7 @@
 #wallet-walletConnect-buttonList-container
 {
     z-index: 99;
-    position: fixed;
+    position: absolute;
     width: 100%;
     height: 100%;
     inset: 0px;
@@ -136,6 +138,8 @@
     padding: 6%;
     background: white;
     text-align: center;
+    position: absolute;
+    top: 2rem;
 }
 #wallet-walletConnect-buttonList
 {
@@ -148,6 +152,8 @@
     background-color: rgb(255, 255, 255);
     text-align: center;
     width: 20.125rem;
+    position:absolute;
+    top:1rem;
 }
 
 .wallet-walletConnect-buttonList-helper-1
@@ -202,7 +208,16 @@
     height:20px;
     border-radius:20px;
     margin-right: 0px;
-opacity: 0.6;
+    opacity: 0.6;
+}
+.table-row-delete
+{
+    text-align:right;
+}
+.table-delete-general-icon-class
+{
+    height:20px;
+    cursor:pointer;
 }
 
 /*--------------*/

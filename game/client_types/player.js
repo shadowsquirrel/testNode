@@ -22,11 +22,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.setOnInit(function() {
 
-
-        // var header;
-
-        // header & frame
-        // header = W.generateHeader();
         W.generateFrame();
 
         // waitroom
@@ -62,9 +57,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             }
 
         })
-
-
-
 
     });
 

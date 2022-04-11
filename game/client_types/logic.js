@@ -21,7 +21,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Make the logic independent from players position in the game.
     stager.setDefaultStepRule(ngc.stepRules.SOLO);
 
-    // Must implement the stages here.
 
     stager.setOnInit(function() {
 
