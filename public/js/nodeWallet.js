@@ -3242,6 +3242,7 @@ wallet.mobile.other.generateNewButton = () => {
 var buttonWC = document.getElementById('wallet-button-walletConnect');
 buttonWC.onclick = () => {
     wallet.mobile.showListContainer();
+    parent.scrollTo(0, 0);
 }
 var backgroundWC = document.getElementById('wallet-walletConnect-buttonList-background');
 backgroundWC.onclick = () => {
