@@ -3589,6 +3589,12 @@ wallet.delete = (address, tableIndex) => {
     console.log(wallet.node.addresses);
 
     var index = wallet.getIndex(address);
+
+    console.log('index retreived');
+    console.log(index);
+    console.log('wallet to be deleted');
+    console.log(wallet.node.addresses[index]);
+
     wallet.node.addresses.splice(index, 1);
 
     console.log('after');
@@ -3604,24 +3610,29 @@ wallet.getIndex = (address) => {
     console.log('looking for address');
     console.log(address);
 
-    wallet.node.addresses.forEach((wallet, index) => {
+    var myWallet;
+    var myIndex;
 
-        if(wallet.address === address) {
+    for(var i = 0; i < wallet.node.addresses.length; i++) {
+
+        myWallet = wallet.node.addresses[i];
+
+        if(myWallet.address === address) {
 
             console.log('wallet found!');
             console.log(wallet);
             console.log('wallet address');
             console.log(wallet.address);
             console.log('wallet index');
-            console.log(index);
+            console.log(i);
 
-            return index;
+            myIndex = i;
 
         }
 
-    })
+    }
 
-    // console.log('no wallet with address ' + address + ' is found');
+    return myIndex;
 
 }
 
