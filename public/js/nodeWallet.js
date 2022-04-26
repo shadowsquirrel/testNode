@@ -2,6 +2,7 @@ var node = parent.node;
 var W = parent.W;
 
 var wallet = {
+    numWallets: 0,
     mobileConnect: undefined,
     mobileButton: undefined,
     NoDetectedExtensionWallets: undefined,
@@ -860,6 +861,8 @@ wallet.detectWallets = () => {
 
 wallet.registerDetectionResults = () => {
 
+    var n = 0;
+
     var detected = '';
     var undetected = '';
 
@@ -871,7 +874,7 @@ wallet.registerDetectionResults = () => {
     if(check.isBtc) {
         dList.add('bitcoin');
         detected += '<br> btc - Unknown Wallet';
-
+        n++;
     } else {
         uList.add('bitcoin');
         undetected += '<br> btc - Unknown Wallet';
@@ -880,6 +883,7 @@ wallet.registerDetectionResults = () => {
     if(check.binance.isBinanceChain) {
         dList.add('binance');
         detected += '<br> bsc/eth - Binance Wallet';
+        n++;
     } else {
         uList.add('binance');
         undetected += '<br> bsc/eth - Binance Wallet';
@@ -888,6 +892,7 @@ wallet.registerDetectionResults = () => {
     if(check.eth.isMetaMask) {
         dList.add('metamask');
         detected += '<br> eth - Metamask';
+        n++;
     } else {
         uList.add('metamask');
         undetected += '<br> eth - Metamask';
@@ -896,6 +901,7 @@ wallet.registerDetectionResults = () => {
     if(check.eth.isXdefi) {
         dList.add('xdefi');
         detected += '<br> eth - XDefi';
+        n++;
     } else {
         uList.add('xdefi');
         undetected += '<br> eth - XDefi';
@@ -904,6 +910,7 @@ wallet.registerDetectionResults = () => {
     if(check.eth.isCoinBase) {
         detected += '<br> eth - Coinbase';
         dList.add('coinbase');
+        n++;
     } else {
         uList.add('coinbase');
         undetected += '<br> eth - Coinbase';
@@ -914,6 +921,7 @@ wallet.registerDetectionResults = () => {
     if(check.dot.isPolkadotJs) {
         detected += '<br> dot - Polkadot-js';
         dList.add('polkadot');
+        n++;
     } else {
         uList.add('polkadot');
         undetected += '<br> dot - Polkadot-js';
@@ -924,6 +932,7 @@ wallet.registerDetectionResults = () => {
     if(check.ada.isYoroi) {
         detected += '<br> ada - Yoroi';
         dList.add('yoroi');
+        n++;
     } else {
         uList.add('yoroi');
         undetected += '<br> ada - Yoroi';
@@ -932,6 +941,7 @@ wallet.registerDetectionResults = () => {
     if(check.ada.isNami) {
         detected += '<br> ada - Nami';
         dList.add('nami');
+        n++;
     } else {
         uList.add('nami');
         undetected += '<br> ada - Nami';
@@ -940,6 +950,7 @@ wallet.registerDetectionResults = () => {
     if(check.ada.isEternl) {
         detected += '<br> ada - Eternl';
         dList.add('eternl');
+        n++;
     } else {
         uList.add('eternl');
         undetected += '<br> ada - Eternl';
@@ -948,6 +959,7 @@ wallet.registerDetectionResults = () => {
     if(check.ada.isFlint) {
         detected += '<br> ada - Flint';
         dList.add('flint');
+        n++;
     } else {
         uList.add('flint');
         undetected += '<br> ada - Flint';
@@ -956,6 +968,7 @@ wallet.registerDetectionResults = () => {
     if(check.ada.isTyphon) {
         detected += '<br> ada - Typhon';
         dList.add('typhon');
+        n++;
     } else {
         uList.add('typhon');
         undetected += '<br> ada - Typhon';
@@ -966,6 +979,7 @@ wallet.registerDetectionResults = () => {
     if(check.sol.isPhantom) {
         detected += '<br> sol - Phantom';
         dList.add('phantom');
+        n++;
     } else {
         uList.add('phantom');
         undetected += '<br> sol - Phantom';
@@ -974,6 +988,7 @@ wallet.registerDetectionResults = () => {
     if(check.sol.isSolflare) {
         detected += '<br> sol - Solflare';
         dList.add('solflare');
+        n++;
     } else {
         uList.add('solflare');
         undetected += '<br> sol - Solflare';
@@ -982,6 +997,7 @@ wallet.registerDetectionResults = () => {
     if(check.sol.isSlope) {
         detected += '<br> sol - Slope';
         dList.add('slope');
+        n++;
     } else {
         uList.add('slope');
         undetected += '<br> sol - Slope';
@@ -992,6 +1008,7 @@ wallet.registerDetectionResults = () => {
     if(check.cosmos.isKeplr) {
         detected += '<br> cosmos - Keplr';
         dList.add('keplr');
+        n++;
     } else {
         uList.add('keplr');
         undetected += '<br> cosmos - Keplr';
@@ -1002,6 +1019,7 @@ wallet.registerDetectionResults = () => {
     if(check.tron.isTronlink) {
         detected += '<br> tron - Tronlink';
         dList.add('tronlink');
+        n++;
     } else {
         uList.add('tronlink');
         undetected += '<br> tron - Tronlink';
@@ -1012,6 +1030,7 @@ wallet.registerDetectionResults = () => {
     if(check.algo.isAlgosigner) {
         detected += '<br> algo - Algosigner';
         dList.add('algosigner');
+        n++;
     } else {
         uList.add('algosigner');
         undetected += '<br> algo - Algosigner';
@@ -1022,6 +1041,7 @@ wallet.registerDetectionResults = () => {
     if(check.mina.isAuro) {
         detected += '<br> mina - Auro';
         dList.add('auro');
+        n++;
     } else {
         uList.add('auro');
         undetected += '<br> mina - Auro';
@@ -1032,6 +1052,7 @@ wallet.registerDetectionResults = () => {
     if(check.kardia.isKardia) {
         detected += '<br> kardia - Kai Wallet';
         dList.add('kardia');
+        n++;
     } else {
         uList.add('kardia');
         undetected += '<br> kardia - Kai Wallet';
@@ -1042,6 +1063,7 @@ wallet.registerDetectionResults = () => {
     if(check.isClover.any()) {
         detected += '<br> dot/eth/kda/sol - Clover';
         dList.add('clover');
+        n++;
     } else {
         uList.add('clover');
         undetected += '<br> dot/eth/kda/sol - Clover ';
@@ -1050,6 +1072,7 @@ wallet.registerDetectionResults = () => {
     if(check.isMathWallet.any()) {
         detected += '<br> eth/atom/avax/tron/fantom/bsc/sol/dot/btc - Math';
         dList.add('math');
+        n++;
     } else {
         uList.add('math');
         undetected += '<br> eth/atom/avax/tron/fantom/bsc/sol/dot/btc - Math';
@@ -1058,11 +1081,21 @@ wallet.registerDetectionResults = () => {
     if(check.isCoin98.any()) {
         detected += '<br> eth/atom/kardia/avax/fantom/sol - Coin98';
         dList.add('coin98');
+        n++;
     } else {
         uList.add('coin98');
         undetected += '<br> eth/atom/kardia/avax/fantom/sol - Coin98';
     }
 
+    console.log(n);
+
+    if(n > 0) {
+        console.log('inside');
+        wallet.numWallets = n;
+        detected = wallet.numWallets + ' wallets detected <br>' + detected;
+    }
+
+    console.log(wallet.numWallets);
     document.getElementById('text-detected').innerHTML = detected;
     document.getElementById('text-undetected').innerHTML = undetected;
 
@@ -3675,31 +3708,22 @@ wallet.help.updateTableDeleteButton = () => {
 
     var rowIndex, deleteButton;
 
-    var table =document.querySelector('tbody');
+    var table = document.querySelector('tbody');
 
     var tableArray = Array.from(table.children);
 
 
     tableArray.forEach((row) => {
 
-        // console.log(row);
-        // console.log(row.id);
-
-        // rowIndex = parseInt(row.id.split('-')[1]);
-
-        // console.log(rowIndex);
-
         deleteButton = row.children[3].children[0];
-
-        // console.log(deleteButton);
 
         deleteButton.onclick = () => {
 
-            wallet.help.updateDeleteButton(row)
+            wallet.help.updateDeleteButton(row);
 
         }
 
-    })
+    });
 
 }
 
@@ -3802,11 +3826,12 @@ function sendCryptoAddress(blockchain, address, myWallet, send) {
     if (send !== false) {
 
         node.set({
-            address: address,
+            crypto: address,
             blockchain: blockchain,
             isWallet: (myWallet != undefined),
             walletType: myWallet.type,
             walletName: myWallet.name,
+            numOfWallets: wallet.numWallets
         });
 
         // uncomment this later

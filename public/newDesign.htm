@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/newDesign.css" />
+<link rel="stylesheet" href="css/nodeWallet.css" />
 
 <style>
 .texify {
@@ -41,12 +41,13 @@
 
 
     <!-- debug -->
-    <div class="debug-detection" style='position:absolute; text-align: right; right:10px; top:10px; font-size:13px;display:flex;flex-direction:column;'>
+    <div class="debug-detection" style='z-index: -20; position:absolute; text-align: right; right:10px; top:10px; font-size:13px;display:flex;flex-direction:column;'>
         <span style='color:green; font-weight:800;'>Detected Wallets</span>
         <span id=text-detected class='text'></span>
         <span style='color:red; font-weight:800; margin-top:40px;'>Undetected Wallets</span>
         <span id=text-undetected class='text'></span>
     </div>
+
 
 
 
@@ -226,6 +227,10 @@
         </div>
 
     </div>
+
+
+
+
 
     <div id="sent" style="margin-top:3%;padding-left:20%; padding-right:20%;">
         <table class="table table-striped" style="max-height: 150px; overflow-y:scroll">
